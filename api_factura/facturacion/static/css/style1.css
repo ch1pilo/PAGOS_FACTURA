@@ -1,0 +1,132 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+h1{
+    color: #193677;
+}
+body {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    background-color: #f8f7ac;
+    display: flex;
+    flex-direction: column; /* Alineación en columna */
+    min-height: 100vh; /* Ocupa toda la altura del viewport */
+}
+
+header {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: #f8f320;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    border-bottom: solid #ffffff 3px;
+}
+.titulo{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-left: 25px;
+    width: 100%;
+}
+
+.titulo form{
+    margin-right: 25px;
+    margin-left: auto;
+   
+}
+header button{
+    background: transparent;
+    border: none;
+    margin-right: 0;
+    margin: auto;
+}
+header img{
+    height: 50px;
+    width: 50px;
+}
+.departamento{
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.departamentos{
+    margin-top: 15px;
+}
+
+.tarjeta{
+    margin: 15px;
+    background-color: #ffffff;
+    display: flex;
+    font-size: 10px;
+    border-radius: 20px;  
+    height: 80px;
+    margin: 15px;
+    border: none;
+    width: 92%;
+}
+.tarjeta img{
+    height: 30px;
+    width: 30px;
+}
+.tarjeta .flecha{
+    margin-bottom: 0;
+    margin-left: auto;
+}
+
+.main{
+    display: flex;
+    
+    flex-direction: column;
+    height: 88vh;
+}
+.inf{
+    display: flex;
+    align-items: center;
+    
+    margin-left: 15px;
+}
+
+.flecha{
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+
+footer {
+    height: 90px;
+    background-color: #f8f320;
+    border-top-right-radius: 25px;
+    border-top-left-radius: 25px;
+    border-top: solid 3px #ffffff;
+    margin-top: auto; /* Empuja el footer al final */
+}
+footer img{
+    height: 50px;
+    width: 50px;
+}
+footer ul{
+    display: flex;
+    padding: 15px;
+    justify-content: center;
+}
+li{
+    margin-left: 10%;
+    margin-right: 10%;
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+#selccionado{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #db0f0b;
+    border-radius: 30px;
+}

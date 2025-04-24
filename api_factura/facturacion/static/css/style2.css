@@ -1,0 +1,351 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    background-color: #f8f7ac;
+    display: flex;
+    flex-direction: column; /* Alineación en columna */
+    min-height: 100vh; /* Ocupa toda la altura del viewport */
+}
+h1{
+    color: #193677;
+}
+header {
+    height: 200px;
+    display: grid;
+    align-items: center;
+    flex-direction: row;
+    background-color: #f8f320;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    border-bottom: solid #ffffff 3px;
+}
+.titulo{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-left: 25px;
+    width: 93%;
+}
+
+.titulo1{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.acciones{
+    background-color: #fffb00;
+    border-radius: 20px;
+    color: #193677;
+    width: 80%;
+    margin-left: 0;
+    margin-right: 0;
+    margin: auto;
+}
+
+.acciones ul{
+    display: flex;    
+    justify-content: center;
+    align-items: center;
+}
+.acciones li {
+    margin-left: 15px;
+    margin-right: 15px;
+    padding: 10px 10px;
+    border-radius: 15px; /* Redondea los bordes */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out; /* Suaviza las transiciones */
+}
+
+.acciones li:hover {
+    background-color: #f3f3f3; /* Cambia el color al pasar el mouse */
+}
+
+.acciones li.selected {
+    background-color: #db0f0b; /* Fondo distintivo para el seleccionado */
+    color: #ffffff; /* Color de texto al resaltar */
+    font-weight: bold;
+    border-radius: 20px; /* Asegura bordes redondeados */
+}
+.titulo button{
+    margin-right: 25px;
+    margin-left: auto;
+    background: transparent;
+    border: none;
+}
+header button{
+
+    margin-right: 0;
+    margin: auto;
+}
+header img{
+    height: 50px;
+    width: 50px;
+}
+.titulo1 img{
+    width: 140px;
+    height: 140px;
+    margin-left: 20px;    
+}
+.titulo1 h1{
+    text-align: center;
+    margin-right: 30px;
+}
+.departamentos{
+    margin-top: 15px;
+}
+
+.departamento{
+    height: 60vh;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+
+
+.tarjeta{
+    display: flex;
+   
+    margin: 15px;
+    background-color: #ffffff;
+    font-size: 10px;
+    border-radius: 20px;  
+    height: 80px;
+    margin: 15px;
+    border: none;
+    width: 92%;
+}
+
+.tarjeta img{
+    height: 30px;
+    width: 30px;
+}
+.tarjeta .flecha{
+    margin-bottom: 0;
+    margin-left: auto;
+}
+
+h2{
+    font-size: 23px;
+}
+.main{
+    flex: 1;
+}
+.inf{
+    display: grid;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.inf h1{
+    margin-top: 15px;
+    text-align: start;
+}
+.inf p{
+    margin-bottom: 15px;
+}
+.flecha{
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+form{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.form2{
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin: auto;
+}
+.formulario{
+    width:80%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: solid 2px #193677;
+    border-radius: 25px;
+    padding: 15px;
+    background-color: #fffb00;
+
+}
+
+input{
+    background-color: #ffffff;
+    border-radius: 10px;  
+    border: none;
+    height: 40px;
+    width: 100%;
+}
+.cliNf, .deparFecha, .cedulaTelefono, .nombreApellido{
+    display: flex;
+    width: auto;
+}
+.cliente, .departa, .fecha, .NrFactua{
+    width: 100%;
+}
+.NrFactua input, .cliente input, .departa input, .fecha input{
+    margin: 0 10px 0 10px;
+    width: 98%;
+    background-color: #d6dae6;
+}
+
+.cedulaTelefono input, .nombreApellido input{
+    margin: 0 10px 0 10px;
+    width: 98%;
+    background-color: #ffffff;
+}
+
+.NrFactua input, .departa input, .cedulaTelefono input, .nombreApellido input{
+    display: flex;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.cliente input, .fecha input{
+    display: flex;
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.form2 input{
+    padding-left: 8px;
+    box-sizing: border-box;
+}
+.cliNf, .deparFecha, .tasa, .monto, .descriip{
+    margin-top: 15px;
+}
+
+label{
+    margin-left: 8px;
+    color: #193677;
+    font-weight: bold;
+}
+
+.boto img{
+    
+    height: 50px;
+    width: 50px;
+}
+.boto button{
+    margin-top: 15px;
+    background-color: #193677;
+    width: 100%;
+    border-radius: 15px;
+}
+
+.facturas .tarjeta .inf p{
+    margin-bottom: 0;
+    text-align: start;
+    font-weight: bold;
+}
+.facturas .tarjeta .inf h1{
+    margin-top: 0;
+    text-align: start;
+}
+.montoDeuda{
+    display: flex;
+    justify-content: center;
+}
+#resta{
+    color: red;
+    margin-right: 0;
+    margin-left: auto;
+}
+#derecha{
+    text-align: right;
+}
+#suma{
+    color: green;
+    margin-right: 0;
+    margin-left: auto;
+}
+#ajustar{
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 15px;
+}
+#alto{
+    height: 38px;
+}
+#colorRed{
+    color: red;
+}
+select{
+    width: 98%;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+}
+.boto p{
+    width: 50px;
+    color: #f3f3f3;
+    font-size: 20px;
+}
+.boto button{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: #f3f3f3;
+}
+#clientesNuevo{
+    margin-top: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+#espaciado{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+#selccionado{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #db0f0b;
+    border-radius: 30px;
+}
+footer {
+    height: 90px;
+    background-color: #f8f320;
+    border-top-right-radius: 25px;
+    border-top-left-radius: 25px;
+    border-top: solid 3px #ffffff;
+    margin-top: auto; /* Empuja el footer al final */
+}
+footer img{
+    height: 50px;
+    width: 50px;
+}
+
+footer ul{
+    display: flex;
+    padding: 15px;
+    justify-content: center;
+}
+li{
+    margin-left: 8%;
+    margin-right: 8%;
+    list-style: none;
+}
+a{
+    text-decoration: none;
+    color: #193677;
+}
+footer button{
+    background-color: transparent;
+    border: none;
+}

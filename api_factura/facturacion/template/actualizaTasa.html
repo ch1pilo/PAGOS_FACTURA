@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasa</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="logo">
+            <h1>Actualizar Tasa</h1>
+        </div>
+    </header>
+
+    <form action="/ActualizarTasa/" class="form2" method="post">
+        {% csrf_token %}
+        
+        <div class="formulario">
+            <h1 id="clientesNuevo">
+                Datos de la Tasa
+            </h1>
+            <div class="nombreApellido" id="espaciado">
+                <div class="NrFactua">
+                    <label for="">Tasa</label>
+                    <input type="number" name="tasa"> 
+                </div>
+            </div>
+            <div class="boto">
+                <button type="submit">
+                    <img src="{% static 'img/verificado.png' %}" alt="">
+                </button>
+            </div>
+            
+        </div>
+    </form>
+
+    <footer>
+        <div class="iconosFactura">
+            <ul>
+                <button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button>
+
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiendas</title>
+</head>
+<body>
+    <div class="main">
+        <header>
+            <div class="titulo">
+                <h1>Tiendas</h1>
+                <form action="/vistaTienda/" method="post">
+                    {%csrf_token%}
+                        <input type="hidden" value="{{departamento}}" name="departamento">
+                        <button type="submit"><img src="{% static 'img/mas.png' %}" alt="departamento-mas"></button>
+                       
+                </form>
+            </div>
+           
+        </header>
+        <div class="departamento">
+            {% for sepaartamento in depar %}
+            
+                <form action="/departamento/" method="post">
+                    {% csrf_token %}
+                    <button class="tarjeta">
+                        <div class="inf">
+                            <h1>{{sepaartamento}}</h1>
+                        </div>
+                        <div class="flecha">
+                            <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                        </div>
+                        <input type="hidden" name="departamento" value={{sepaartamento}}>
+                    </button>
+                </form>
+            {% endfor %}
+    
+        </div>
+    </div>
+
+    <footer>
+        <div class="iconos">
+            <ul>
+                <li ><a href="/usuarios/"><img src="{% static 'img/avatar2.png' %}" alt="usuario"></a></li>
+                <li id="selccionado"><img src="{% static 'img/departamento2.png' %}" alt="departamentos"></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

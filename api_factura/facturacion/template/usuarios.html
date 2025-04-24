@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario Perfil</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="logo">
+            <h1>Perfil Usuarios</h1>
+        </div>
+       
+    </header>
+   
+
+                <a href="/editarUsuario/" class="tarjeta">
+                    <div class="inf">
+                        <h2>Editar Perfil</h2>
+                    </div>
+                    <div class="flecha">
+                        <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                    </div>
+                </a>
+
+                <a href="/formulariousuario/" class="tarjeta">
+                    <div class="inf">
+                        <h2>Crear Usuario</h2>
+                    </div>
+                    <div class="flecha">
+                        <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                    </div>
+                </a>
+
+                <a href="/tasa/" class="tarjeta">
+                    <div class="inf">
+                        <h2>Actualizar Tasa</h2>
+                    </div>
+                    <div class="flecha">
+                        <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                    </div>
+                </a>
+
+                <a href="/tipoUser/" class="tarjeta">
+                    <div class="inf">
+                        <h2>Tiendas</h2>
+                    </div>
+                    <div class="flecha">
+                        <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                    </div>
+                </a>
+
+    </div>
+
+    <footer>
+        <div class="iconosFactura">
+            <ul>
+                <li><button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button></li>
+                <li><button><a href="/formulario/"><img src="{% static 'img/cerrar-sesion.png' %}" alt=""></a></button></li>
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>

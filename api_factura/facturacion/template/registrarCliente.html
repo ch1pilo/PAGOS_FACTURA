@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Cliente</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
+            <h1>Crear Cliente</h1>
+        </div>
+       
+    </header>
+    <form action="/registrarClientes/" class="form2" method="post">
+        {% csrf_token %}
+        <input type="hidden" value="{{departamento}}" name="departamento">
+        <div class="formulario">
+            <h1 id="clientesNuevo">
+                Datos del cliente
+            </h1>
+            <div class="nombreApellido" id="espaciado">
+                <div class="NrFactua">
+                    <label for="">Nombre</label>
+                    <input type="text" name="nombre"> 
+                </div>
+                <div class="cliente">
+                    <label for="">Apellido</label>
+                    <input type="text" name="apellido">
+                </div>
+            </div>
+            <div class="cedulaTelefono" id="espaciado">
+                <div class="departa">
+                    <label for="">Cedula</label>
+                    <input type="text" name="cedula"> 
+                </div>
+                
+                <div class="fecha">
+                    <label for="">Telefono</label>
+                    <input name="numero"  type="number" > 
+                </div>    
+            </div>
+            <div class="boto">
+                <button type="submit">
+                    <img src="{% static 'img/verificado.png' %}" alt="">
+                </button>
+            </div>
+            
+        </div>
+    </form>
+    <footer>
+        <div class="iconosFactura">
+            <ul>
+                <button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button>
+
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>

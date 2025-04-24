@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
+            <h1>Generar Pago</h1>
+            <br>
+        </div>
+       
+    </header>
+    <form action="/pagogenerado/" method="post" class="form2">
+        {% csrf_token %}
+        <div class="formulario">
+            <div class="cliNf">
+                <div class="NrFactua">
+                    <label for="" id="alto">Nr Factura</label>
+                    <input type="text" name="factura" value="{{factura.nrFactura}}" readonly> 
+                </div>
+                <div class="cliente">
+                    <label for="">Usuario Procede</label>
+                    <input type="text" name="usuario" value="{{usuario}}" readonly>
+                </div>
+            </div>
+            <div class="deparFecha">
+                <div class="departa">
+                    <label for="">Moneda</label>
+                    <select name="moneda" id="moneda" onchange="actualizarMetodos()">
+                        {% for m in moneda %}
+                        <option value="{{ m.id }}">{{ m.nombre_moneda }}</option> 
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="fecha">
+                    <label for="">Fecha</label>
+                    <input name="fecha" value="{{fecha}}" type="date" readonly> 
+                </div>    
+            </div>
+            <div class="tasa" id="tasa">
+                <label for="">Metodo Pago</label>
+                <select name="metodo" id="metodo">
+                    <!-- Opciones de métodos de pago generadas dinámicamente -->
+                </select>
+            </div>
+
+            <div class="monto">
+                <label for="">Monto</label>
+                <input id="colorRed" type="number" name="monto" required placeholder="Monto a Pagar">  
+            </div>
+
+            <div class="descriip">
+                <label for="">Descripcion</label>
+                <input type="text" name="descripcion" placeholder="Descripcion"> 
+            </div>
+
+            <div class="boto">
+                <button type="submit">
+                    <p>Pagar</p>
+                    <img src="{% static 'img/pago.png' %}" alt="">
+                </button>
+            </div>
+        </div>
+    </form>
+    <footer>
+        <div class="iconos">
+            <ul>
+                <li><button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button></li>
+               
+            </ul>
+        </div>
+    </footer>
+
+
+    <script>
+        var listaMonedasMetodos = JSON.parse('{{ listaMonedasMetodos|safe }}');
+    
+        function actualizarMetodos() {
+            var monedaSeleccionada = document.getElementById("moneda").value;
+            var metodoSelect = document.getElementById("metodo");
+            metodoSelect.innerHTML = "";  // Limpiar opciones previas
+    
+            // Buscar los métodos de pago de la moneda seleccionada en el diccionario
+            var metodos = listaMonedasMetodos[monedaSeleccionada] || [];
+    
+            // Agregar opciones al select
+            metodos.forEach(metodo => {
+                var option = document.createElement("option");
+                option.value = metodo.id;
+                option.textContent = metodo.tipoPago;
+                metodoSelect.appendChild(option);
+            });
+        }
+    </script>
+    
+      
+
+</body>
+</html>

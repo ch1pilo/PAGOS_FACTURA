@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
+            <h1>Reportes</h1>
+        </div>
+       
+    </header>
+    <div class="facturas">
+        {%for p in pagos%}
+        <form action="/datosPagados/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="factura" value="{{f.facturas.nrFactura}}">
+            <button type="submit" class="tarjeta">
+                <div class="inf">
+                    <h1>{{nrFactura}}</h1>
+                    <div class="montoDeuda">
+                        <p>Monto: {{p.monto}}bs</p>
+                        <p>Moneda: {{f.monto}}bs</p>
+                        <input type="hidden" name="datosDelPago" value="{{p.id}}">
+                    </div>
+                    <p>Detalle: {{f.facturas.descripcion}}</p>
+                </div>
+                <div class="flecha">
+                    <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                </div>
+            </button>
+        </form>
+        {%endfor%}
+    </div>
+    <footer>
+        <div class="iconosFactura">
+            <ul>
+                <button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

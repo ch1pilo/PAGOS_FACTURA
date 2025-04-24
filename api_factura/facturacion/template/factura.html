@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
+            <h1>Crear Factura</h1>
+        </div>
+       
+    </header>
+    <form action="/generarFactura/" class="form2">
+        {% csrf_token %}
+        <div class="formulario">
+            <div class="cliNf">
+                <div class="NrFactua">
+                    <label for="">Nr Factura</label>
+                    <input type="text" name="factura" value="{{nrFactura}}" readonly> 
+                </div>
+                <div class="cliente">
+                    <label for="">Cliente</label>
+                    <input type="text" name="cliente" value="{{ cliente }}" readonly>
+                </div>
+            </div>
+            <div class="deparFecha">
+                <div class="departa">
+                    <label for="">Departemento</label>
+                    <input type="text" name="departaentoDato" value="{{ depar }}" readonly> 
+                </div>
+                
+                <div class="fecha">
+                    <label for="">Fecha</label>
+                    <input name="fecha" value="{{fecha}}" type="date" readonly> 
+                </div>    
+            </div>
+            <div class="tasa">
+                <label for="">Tasa</label>
+                <input type="text" name="tasa" value="{{tasa}}" readonly> 
+            </div>
+            <div class="descriip">
+                <label for="">Descripcion</label>
+                <input type="text" name="descripcion" placeholder="Descripcion"> 
+            </div>
+            
+            <div class="monto">
+                <label for="">Monto</label>
+                <input type="number" name="monto" placeholder="Monto" required> 
+            </div>
+            
+            <div class="boto">
+                <button type="submit">
+                    <img src="{% static 'img/verificado.png' %}" alt="">
+                </button>
+            </div>
+        </div>
+    </form>
+    <footer>
+        <div class="iconosFactura">
+            <ul>
+                <button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button>
+
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>

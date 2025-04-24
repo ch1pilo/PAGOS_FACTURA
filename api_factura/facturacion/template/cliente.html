@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente</title>
+</head>
+<body>
+    <header>
+        <div class="titulo">
+            <h1>Clientes
+                <br> {{ departamento }}
+            </h1>
+            <form action="/registrarCliente/" method="post">
+                {%csrf_token%}
+                    <input type="hidden" value="{{departamento}}" name="departamento">
+                    <button type="submit"><img src="{% static 'img/mas.png' %}" alt="departamento-mas"></button>
+                   
+            </form>
+            
+        </div>
+        <div class="acciones">
+            <ul>
+                <li data-filtro="activo" class="selected">Activo</li>
+                <li data-filtro="adeudado">Adeudado</li>
+                <li data-filtro="pagado">Pagado</li>
+            </ul>
+        </div>
+    </header>
+    <div class="departamento">
+        <p>Mostrando los clientes relacionados...</p>
+    </div>
+    <footer>
+        <div class="iconos">
+            <ul>
+                <li ><a href="/usuarios/"><img src="{% static 'img/avatar2.png' %}" alt="usuario"></a></li>
+                <li id="selccionado"><img src="{% static 'img/clientes.png' %}" alt="lista clientes"></li>
+                
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Datos enviados desde el backend (JSON serializado desde Django)
+            const todosClientes = JSON.parse('{{ todos_clientes|escapejs }}');
+            const clientesAdeudados = JSON.parse('{{ clientes_adeudados|escapejs }}');
+            const clientesPagados = JSON.parse('{{ clientes_pagados|escapejs }}');
+            const departamento = "{{ departamento|escapejs }}";
+        
+            // Define las URLs para cada filtro
+            const urlsPorFiltro = {
+                activo: "/datosFactura/",      // URL para clientes activos
+                adeudado: "/datosFacturasCliente/",  // URL para clientes adeudados
+                pagado: "/facturas_pagadas_cliente/"       // URL para clientes pagados
+            };
+        
+            // Función para renderizar los clientes dinámicamente
+            const renderClientes = (clientes, filtro) => {
+                const clientesContainer = document.querySelector(".departamento");
+                clientesContainer.innerHTML = ""; // Limpia el contenido actual
+        
+                if (clientes.length > 0) {
+                    clientes.forEach((nombre) => {
+                        const form = document.createElement("form");
+                        form.method = "post";
+                        form.action = urlsPorFiltro[filtro]; // Configura la URL dinámica aquí
+        
+                        form.innerHTML = `
+                            {% csrf_token %}
+                            <input type="hidden" name="cliente" value="${nombre}">
+                            <input type="hidden" name="departamento" value="${departamento}">
+                            <button type="submit" class="tarjeta">
+                                <div class="inf">
+                                    <h1>${nombre}</h1>
+                                    <p>Generar una factura</p>
+                                </div>
+                                <div class="flecha">
+                                    <img src="{% static 'img/flecha-correcta.png' %}" alt="flecha">
+                                </div>
+                            </button>
+                        `;
+                        clientesContainer.appendChild(form);
+                    });
+                } else {
+                    clientesContainer.innerHTML = "<p>No hay clientes disponibles para este filtro.</p>";
+                }
+            };
+        
+            // Renderiza inicialmente los clientes activos
+            renderClientes(todosClientes, "activo");
+        
+            // Asigna eventos a los botones de filtro
+            document.querySelectorAll(".acciones li").forEach((item) => {
+                item.addEventListener("click", (event) => {
+                    // Elimina la clase 'selected' de todos los botones
+                    document.querySelectorAll(".acciones li").forEach((li) => {
+                        li.classList.remove("selected");
+                    });
+        
+                    // Marca el botón actual como 'selected'
+                    event.target.classList.add("selected");
+        
+                    // Obtén el filtro seleccionado
+                    const filtro = event.target.getAttribute("data-filtro");
+        
+                    console.log("Filtro seleccionado:", filtro);
+        
+                    // Renderiza los clientes según el filtro seleccionado
+                    if (filtro === "activo") {
+                        renderClientes(todosClientes, "activo");
+                    } else if (filtro === "adeudado") {
+                        renderClientes(clientesAdeudados, "adeudado");
+                    } else if (filtro === "pagado") {
+                        renderClientes(clientesPagados, "pagado");
+                    }
+                });
+            });
+        });
+        
+    </script>
+</body>
+</html>

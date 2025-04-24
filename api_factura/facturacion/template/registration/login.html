@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    
+
+    <div class="logo">
+        <img src="{% static 'img/logo.png' %}" alt="Logo">
+        <h1>Inicia Sesión</h1>
+    </div>    
+
+    <form id="loginForm" method="POST" action="/api/login/">
+        {% csrf_token %}
+        <input type="text" id="usuario" name="usuario" placeholder="Usuario" required>
+        <input type="password" id="con" name="con" placeholder="Contraseña" required>
+        <button type="submit">Ingresar</button>
+        <a href="#">¿Olvidaste tu contraseña?</a>
+    </form>
+
+    <script>
+        document.querySelector("#loginForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+
+            const response = await fetch('/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message);
+                window.location.href = '/tipoUser/';
+            } else {
+                const error = await response.json();
+                alert(error.error || 'Error de autenticación');
+            }
+        });
+    </script>
+</body>
+</html>

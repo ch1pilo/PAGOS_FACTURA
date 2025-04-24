@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar</title>
+</head>
+<body>
+    <header>
+        <div class="titulo1">
+            <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
+            <h1>Datos del Pago</h1>
+            <br>
+        </div>
+       
+    </header>
+    <form action="/pago/" class="form2">
+        {% csrf_token %}
+        <div class="formulario">
+            <div class="cliNf">
+                <div class="NrFactua">
+                    <label for="">Nr Factura</label>
+                    <input type="text" name="factura" value="{{pago.id_factura}}" readonly> 
+                </div>
+                <div class="cliente">
+                    <label for="">Moneda</label>
+                    <input type="text" name="cliente" value="{{pago.id_moneda}}" readonly>
+                </div>
+            </div>
+            <div class="deparFecha">
+                <div class="departa">
+                    <label for="">Metodo Pago</label>
+                    <input type="text" name="departaentoDato" value="{{ metodoPago }}" readonly> 
+                </div>
+                
+                <div class="fecha">
+                    <label for="">Fecha</label>
+                    <input name="fecha" value="{{fecha}}" type="date" readonly> 
+                </div>    
+            </div>
+           
+            <div class="descriip" id="descriip">
+                <label for="">Usuario Que Intersede</label>
+                <input type="text" name="descripcion" value="{{pago.id_usuario}}" readonly> 
+            </div>
+            <div class="descriip" id="descriip">
+                <label for="">Saldo Abonado</label>
+                <input type="text" name="resta" value="{{pago.monto}}" readonly> 
+            </div>
+            <div class="monto" id="monto">
+                <label for="">Monto de la factura</label>
+                <input type="number" name="monto" value="{{factura.monto}}" readonly> 
+            </div>
+            <div class="boto">
+                
+            </div>
+        </div>
+    </form>
+    <footer>
+        <div class="iconos">
+            <ul>
+                <li><button onclick="history.back()"><img src="{% static 'img/rechazado.png' %}" alt=""></button></li>
+            </ul>
+        </div>
+    </footer>
+
+</body>
+</html>
