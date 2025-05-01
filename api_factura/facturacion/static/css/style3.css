@@ -13,17 +13,15 @@
     align-items: center;
   }
   .logo{
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-    margin-right: 0;
-    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
   }
   img{
-    height: 400px;
-    width: 400px;
-    margin-bottom: 30px;
-    margin: auto;
+    height: 350px;
+    width: 350px;
+
   }
   
   h1{

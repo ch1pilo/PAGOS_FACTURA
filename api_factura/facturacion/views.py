@@ -55,13 +55,14 @@ def tipoUser(request):
         
         return render(request, 'index.html')
     except models.Profile.DoesNotExist:
-        return render(request, 'index.html')
+        return render(request, 'login.html')
 
 # Vista para procesar departamento
+@login_required
 def departamento(request):
     if request.method == 'POST' or request.method == 'GET':
-        depaar = request.POST.get('departamento') if request.method == 'POST' else request.GET.get('departamento')
-
+        depaar = request.POST.get('departamento', "").strip()
+        print(f'este es el departamento {depaar}')
         try:
             # Busca el departamento
             departamento = models.Departamentos.objects.get(departamento=depaar)
@@ -106,8 +107,9 @@ def departamento(request):
             return redirect('tipoUser')
 
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
-
+@login_required
 def datosFactura(request):
+    try:
         if request.method == 'POST' or request.method == 'GET':
             departaemnto = request.POST.get('departamento') if request.method == 'POST' else request.GET.get('departamento')
             cliete = request.POST.get('cliente')
@@ -129,50 +131,59 @@ def datosFactura(request):
                 'fecha' : fecha_formateada
             }
             return render (request, 'factura.html', dic)
-            
-def generarFactura(request):
-    if request.method == 'GET' or request.methos == 'POST':
-        depart = request.GET.get('departaentoDato')
-        nrFactura = request.GET.get('factura')
-        monto = request.GET.get('monto')
-        fecha = request.GET.get('fecha')
-        tasa = request.GET.get('tasa')
-        descripcion = request.GET.get('descripcion')
-        
-        cliente = request.GET.get('cliente')
-        estatusID = models.Estatus.objects.get(tipo_estatus = 'pendiente')
-        clienteID = models.Cliente.objects.get(nombre = cliente)
-        idDepartamento = models.Departamentos.objects.get(departamento = depart)
-           
-        dic = {
-            'departamento' : idDepartamento.departamento,
-        }
-        enviar = models.Factura(
-            nrFactura = nrFactura,
-            monto = monto,
-            descripcion=descripcion,
-            id_cliente = clienteID,
-            id_estatus = estatusID,
-            fecha = fecha,
-            tasa = tasa,
-            idDepartamento = idDepartamento,
-        ) 
-        
-        print(idDepartamento.departamento)
-        enviar.save()
-        palabra = {
-            'palabra' : 'Factura',
-            'departamento' : depart
-        }
-        return render(request, 'confirmar.html', palabra)
-    else:
-        dic = {
-                'dep' : 'lol',
-                'nom' : 'lol'
-            }
-        return render(request, 'lol.html', dic)
+    except:
+        return redirect('tipoUser')
     
+@login_required           
+def generarFactura(request):
+    try:
+        if request.method == 'GET' or request.methos == 'POST':
+            depart = request.GET.get('departaentoDato')
+            nrFactura = request.GET.get('factura')
+            monto = request.GET.get('monto')
+            fecha = request.GET.get('fecha')
+            tasa = request.GET.get('tasa')
+            descripcion = request.GET.get('descripcion')
+            
+            cliente = request.GET.get('cliente')
+            estatusID = models.Estatus.objects.get(tipo_estatus = 'pendiente')
+            clienteID = models.Cliente.objects.get(nombre = cliente)
+            idDepartamento = models.Departamentos.objects.get(departamento = depart)
+            
+            dic = {
+                'departamento' : idDepartamento.departamento,
+            }
+            enviar = models.Factura(
+                nrFactura = nrFactura,
+                monto = monto,
+                descripcion=descripcion,
+                id_cliente = clienteID,
+                id_estatus = estatusID,
+                fecha = fecha,
+                tasa = tasa,
+                idDepartamento = idDepartamento,
+            ) 
+            
+            print(idDepartamento.departamento)
+            enviar.save()
+            palabra = {
+                'palabra' : 'Factura',
+                'departamento' : depart
+            }
+            return render(request, 'confirmar.html', palabra)
+        else:
+            dic = {
+                    'dep' : 'lol',
+                    'nom' : 'lol'
+                }
+            return render(request, 'lol.html', dic)
+    except:
+        return redirect('tipoUser')
+    
+    
+@login_required    
 def datosFacturaPagar(request):
+    try:
         if request.method == 'POST' or request.method == 'GET':
             usuario = request.user
             cliete = request.POST.get('factura')
@@ -192,306 +203,367 @@ def datosFacturaPagar(request):
                 'fecha' : fecha
             }
             return render (request, 'pagar.html', dic)
-
+    except:
+        return redirect('tipoUser')
+        
+@login_required
 def datosFacturaPagarPagos(request):
-    if request.method in ['POST', 'GET']:
-        usuario = request.user
-        facturanmr = request.POST.get('factura')
-        facturas = models.Factura.objects.get(nrFactura=facturanmr)
-        fecha = datetime.now().strftime("%Y-%m-%d")
+    try:
+        if request.method in ['POST', 'GET']:
+            usuario = request.user
+            facturanmr = request.POST.get('factura')
+            facturas = models.Factura.objects.get(nrFactura=facturanmr)
+            fecha = datetime.now().strftime("%Y-%m-%d")
 
-        # Obtener todas las monedas
-        monedas = models.Moneda.objects.all()
+            # Obtener todas las monedas
+            monedas = models.Moneda.objects.all()
 
-        # Crear un diccionario con cada moneda y sus métodos de pago asociados
-        listaDeMonedasMetodos = {
-            moneda.id: list(models.MetodosPago.objects.filter(monedaId=moneda).values("id", "tipoPago"))  # <-- Cambiado
-            for moneda in monedas
-        }
-        
-        metodosPagos = models.MetodosPago.objects.all()
-        print("Factura seleccionada:", facturanmr)
-        print("Monedas obtenidas:", monedas)
-        print("Métodos de pago obtenidos:", metodosPagos)
-        print("Lista de métodos por moneda:", listaDeMonedasMetodos)
-        metodos = models.MetodosPago.objects.all()
-        dic = {
-            'moneda': monedas,
-            'metodo': metodos,  # Todos los métodos de pago en general
-            'listaMonedasMetodos': json.dumps(listaDeMonedasMetodos),  # Métodos filtrados por moneda
-            'fecha': fecha,
-            'usuario': usuario,
-            'factura': facturas,
-        }
-
-        return render(request, 'pago.html', dic)
-
-def datosFacturasCliente(request):
-        if request.method == 'POST' or request.method == 'GET':
-            departaemnto = request.POST.get('departamento') if request.method == 'POST' else request.GET.get('departamento')
-            cliete = request.POST.get('cliente')
-            clienteID = models.Cliente.objects.get(nombre = cliete)
-            departamentoID = models.Departamentos.objects.get(departamento = departaemnto)
-            facturas = models.Factura.objects.all()
-            pagos = models.Pago.objects.all()
-            facturaCliente = []
-            for f in facturas:
-                print(f'{f.nrFactura} id= {f.id_cliente_id} otro {clienteID.id} departamento= {departamentoID.id} otro {f.idDepartamento_id}')
-                montoTotal = 0
-                for p in pagos:
-                    if f.id == p.id_factura_id:
-                        montoTotal += p.monto  
-                         
-                    
-                if f.id_cliente_id == clienteID.id and departamentoID.id == f.idDepartamento_id and (f.monto-montoTotal)>0:
-                    facturaCliente.append({
-                        'facturas': f,
-                        'monto' : (f.monto-montoTotal)                   
-                                           })
-                    print(f.nrFactura)
-                    
-            dic = {
-                'cliente' : cliete,
-                'f' : facturaCliente,
+            # Crear un diccionario con cada moneda y sus métodos de pago asociados
+            listaDeMonedasMetodos = {
+                moneda.id: list(models.MetodosPago.objects.filter(monedaId=moneda).values("id", "tipoPago"))  # <-- Cambiado
+                for moneda in monedas
             }
-            return render (request, 'listaFacturas.html', dic)
-        
-def pagogenerado(request):
-    if request.method == 'POST' or request.method == 'GET':
-        factura = request.POST.get('factura')
-        monea = request.POST.get('moneda')
-        fecha = request.POST.get('fecha')
-        metodo = request.POST.get('metodo')
-        monto = request.POST.get('monto')
-        
-        print(factura)
-        print(monea)
-        print(metodo)
-        usu = request.user
-        facturaID = models.Factura.objects.get(nrFactura = factura)
-        monedaID = models.Moneda.objects.get(id = monea)
-        if monedaID.nombre_moneda == 'USD':
-            monto = facturaID.tasa * int(monto)
-            print(monto)
-        
-        descripcion = request.GET.get('descripcion')
-        if descripcion == None:
-                descripcion = 'sin efecto'
-        
-        
-        enviar = models.Pago(
-            id_factura = facturaID,
-            monto = monto,
-            fecha = fecha,
-            metodo_pago = metodo,
-            id_moneda = monedaID,
-            id_usuario = usu,
-            descripcion = descripcion
             
-        )
-        enviar.save()
-        palabra = {
-            'palabra' : 'Pago',
-            'departamento' : facturaID.idDepartamento
-        }
-        return render(request, 'confirmar.html', palabra)
+            metodosPagos = models.MetodosPago.objects.all()
+            print("Factura seleccionada:", facturanmr)
+            print("Monedas obtenidas:", monedas)
+            print("Métodos de pago obtenidos:", metodosPagos)
+            print("Lista de métodos por moneda:", listaDeMonedasMetodos)
+            metodos = models.MetodosPago.objects.all()
+            dic = {
+                'moneda': monedas,
+                'metodo': metodos,  # Todos los métodos de pago en general
+                'listaMonedasMetodos': json.dumps(listaDeMonedasMetodos),  # Métodos filtrados por moneda
+                'fecha': fecha,
+                'usuario': usuario,
+                'factura': facturas,
+            }
 
-def repostePagados(request):
-    factura = request.POST.get('factura')
-    print(f' obtenido {factura}')
-    idFactura = models.Factura.objects.get(nrFactura = factura)
-    print( f' factura iguaada y traida de la tabla factura que es el id {idFactura.id}')
-    facturas = []
-   
-    pagosExisten = models.Pago.objects.all()
-    for p in pagosExisten:
-        print( f'si {idFactura.id} = {p.id_factura_id}')
-        if idFactura.id == p.id_factura_id:
-            print(f'pagos agg {p}')
-            facturas.append(p)
+            return render(request, 'pago.html', dic)
+    except:
+        return redirect('tipoUser')
+    
+@login_required
+def datosFacturasCliente(request):
+        try:
+            if request.method == 'POST' or request.method == 'GET':
+                departaemnto = request.POST.get('departamento') if request.method == 'POST' else request.GET.get('departamento')
+                cliete = request.POST.get('cliente')
+                clienteID = models.Cliente.objects.get(nombre = cliete)
+                departamentoID = models.Departamentos.objects.get(departamento = departaemnto)
+                facturas = models.Factura.objects.all()
+                pagos = models.Pago.objects.all()
+                facturaCliente = []
+                for f in facturas:
+                    print(f'{f.nrFactura} id= {f.id_cliente_id} otro {clienteID.id} departamento= {departamentoID.id} otro {f.idDepartamento_id}')
+                    montoTotal = 0
+                    for p in pagos:
+                        if f.id == p.id_factura_id:
+                            montoTotal += p.monto  
+                            
+                        
+                    if f.id_cliente_id == clienteID.id and departamentoID.id == f.idDepartamento_id and (f.monto-montoTotal)>0:
+                        facturaCliente.append({
+                            'facturas': f,
+                            'monto' : (f.monto-montoTotal)                   
+                                            })
+                        print(f.nrFactura)
+                        
+                dic = {
+                    'cliente' : cliete,
+                    'f' : facturaCliente,
+                }
+                return render (request, 'listaFacturas.html', dic)
+        except:
+            return redirect('tipoUser')
+        
+@login_required        
+def pagogenerado(request):
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            factura = request.POST.get('factura')
+            monea = request.POST.get('moneda')
+            fecha = request.POST.get('fecha')
+            metodo = request.POST.get('metodo')
+            monto = request.POST.get('monto')
+            
+            print(factura)
+            print(monea)
+            print(metodo)
+            usu = request.user
+            facturaID = models.Factura.objects.get(nrFactura = factura)
+            monedaID = models.Moneda.objects.get(id = monea)
+            if monedaID.nombre_moneda == 'USD':
+                monto = facturaID.tasa * int(monto)
+                print(monto)
+            
+            descripcion = request.GET.get('descripcion')
+            if descripcion == None:
+                    descripcion = 'sin efecto'
+            
+            
+            enviar = models.Pago(
+                id_factura = facturaID,
+                monto = monto,
+                fecha = fecha,
+                metodo_pago = metodo,
+                id_moneda = monedaID,
+                id_usuario = usu,
+                descripcion = descripcion
                 
-    dic = {
-        'pagos' : facturas,
-        'nrFactura' :factura
-    }
+            )
+            enviar.save()
+            palabra = {
+                'palabra' : 'Pago',
+                'departamento' : facturaID.idDepartamento
+            }
+            return render(request, 'confirmar.html', palabra)
+    except:
+        return redirect('tipoUser')
     
-    return render(request, 'reportePagos.html', dic)
+@login_required
+def repostePagados(request):
+    try:
+        factura = request.POST.get('factura')
+        print(f' obtenido {factura}')
+        idFactura = models.Factura.objects.get(nrFactura = factura)
+        print( f' factura iguaada y traida de la tabla factura que es el id {idFactura.id}')
+        facturas = []
+    
+        pagosExisten = models.Pago.objects.all()
+        for p in pagosExisten:
+            print( f'si {idFactura.id} = {p.id_factura_id}')
+            if idFactura.id == p.id_factura_id:
+                print(f'pagos agg {p}')
+                facturas.append(p)
+                    
+        dic = {
+            'pagos' : facturas,
+            'nrFactura' :factura
+        }
+        
+        return render(request, 'reportePagos.html', dic)
+    except:
+        return redirect('tipoUser')
 
+@login_required
 def datosDelPago (request):
-    if request.method == 'POST' or request.method == 'GET':
-        datosID = request.POST.get('datosDelPago')
-        pago = models.Pago.objects.get(id = datosID)
-        nrFactura = pago.id_factura
-        fecha = pago.fecha.strftime("%Y-%m-%d")
-        factura = models.Factura.objects.get(nrFactura = nrFactura)
-        metodoPago = models.MetodosPago.objects.get(id = pago.metodo_pago )
-        dic = {
-            'metodoPago' : metodoPago,
-            'fecha' : fecha,
-            'pago' : pago,
-            'factura' : factura
-        }
-        
-        return render(request, 'detallePago.html', dic)
-    
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            datosID = request.POST.get('datosDelPago')
+            pago = models.Pago.objects.get(id = datosID)
+            nrFactura = pago.id_factura
+            fecha = pago.fecha.strftime("%Y-%m-%d")
+            factura = models.Factura.objects.get(nrFactura = nrFactura)
+            metodoPago = models.MetodosPago.objects.get(id = pago.metodo_pago )
+            dic = {
+                'metodoPago' : metodoPago,
+                'fecha' : fecha,
+                'pago' : pago,
+                'factura' : factura
+            }
+            
+            return render(request, 'detallePago.html', dic)
+    except:
+        return redirect('tipoUser')
+ 
+@login_required   
 def facturas_pagadas_cliente(request):
-    if request.method == 'POST' or request.method == 'GET':
-        departamento = request.POST.get('departamento') if request.method == 'POST' else request.GET.get('departamento')
-        cliente_nombre = request.POST.get('cliente')
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            departamento = request.POST.get('departamento') if request.method == 'POST' else request.GET.get('departamento')
+            cliente_nombre = request.POST.get('cliente')
 
-        try:
-            cliente = models.Cliente.objects.get(nombre=cliente_nombre)
-            departamento_obj = models.Departamentos.objects.get(departamento=departamento)
-        except models.Cliente.DoesNotExist:
-            print(f"Cliente '{cliente_nombre}' no encontrado.")  # Depuración
-            return HttpResponse("Cliente no encontrado", status=404)
-        except models.Departamentos.DoesNotExist:
-            print(f"Departamento '{departamento}' no encontrado.")  # Depuración
-            return HttpResponse("Departamento no encontrado", status=404)
+            try:
+                cliente = models.Cliente.objects.get(nombre=cliente_nombre)
+                departamento_obj = models.Departamentos.objects.get(departamento=departamento)
+            except models.Cliente.DoesNotExist:
+                print(f"Cliente '{cliente_nombre}' no encontrado.")  # Depuración
+                return HttpResponse("Cliente no encontrado", status=404)
+            except models.Departamentos.DoesNotExist:
+                print(f"Departamento '{departamento}' no encontrado.")  # Depuración
+                return HttpResponse("Departamento no encontrado", status=404)
 
-        # Filtrar las facturas completamente pagadas
-        facturas = models.Factura.objects.filter(id_cliente=cliente.id, idDepartamento=departamento_obj.id)
-        print(f"Facturas obtenidas: {facturas}")  # Depuración
+            # Filtrar las facturas completamente pagadas
+            facturas = models.Factura.objects.filter(id_cliente=cliente.id, idDepartamento=departamento_obj.id)
+            print(f"Facturas obtenidas: {facturas}")  # Depuración
 
-        pagos = models.Pago.objects.filter(id_factura__in=[f.id for f in facturas])
-        print(f"Pagos obtenidos: {pagos}")  # Depuración
+            pagos = models.Pago.objects.filter(id_factura__in=[f.id for f in facturas])
+            print(f"Pagos obtenidos: {pagos}")  # Depuración
 
-        pagos_por_factura = {}
-        for pago in pagos:
-            if pago.id_factura_id not in pagos_por_factura:
-                pagos_por_factura[pago.id_factura_id] = 0
-            pagos_por_factura[pago.id_factura_id] += pago.monto
+            pagos_por_factura = {}
+            for pago in pagos:
+                if pago.id_factura_id not in pagos_por_factura:
+                    pagos_por_factura[pago.id_factura_id] = 0
+                pagos_por_factura[pago.id_factura_id] += pago.monto
 
-        print(f"Pagos acumulados por factura: {pagos_por_factura}")  # Depuración
+            print(f"Pagos acumulados por factura: {pagos_por_factura}")  # Depuración
 
-        facturas_pagadas = []
-        for factura in facturas:
-            monto_total_pagado = pagos_por_factura.get(factura.id, 0)  # Obtiene monto pagado individualmente
-            residuo = factura.monto - monto_total_pagado  # Calcula el residuo
+            facturas_pagadas = []
+            for factura in facturas:
+                monto_total_pagado = pagos_por_factura.get(factura.id, 0)  # Obtiene monto pagado individualmente
+                residuo = factura.monto - monto_total_pagado  # Calcula el residuo
 
-            print(f'Factura {factura.id}: Monto total abonado {monto_total_pagado}')
-            print(f'Residuo: {factura.monto} - {monto_total_pagado} = {residuo}')
+                print(f'Factura {factura.id}: Monto total abonado {monto_total_pagado}')
+                print(f'Residuo: {factura.monto} - {monto_total_pagado} = {residuo}')
 
-            if factura.monto == monto_total_pagado or residuo < 0:  # Si está completamente pagada o hay excedente
-                facturas_pagadas.append({'factura': factura, 'residuo': (-1)*residuo})  # Agrega el residuo a la lista
+                if factura.monto == monto_total_pagado or residuo < 0:  # Si está completamente pagada o hay excedente
+                    facturas_pagadas.append({'factura': factura, 'residuo': (-1)*residuo})  # Agrega el residuo a la lista
 
-        print(f"Facturas completamente pagadas con residuo: {facturas_pagadas}")  # Depuración
+            print(f"Facturas completamente pagadas con residuo: {facturas_pagadas}")  # Depuración
 
-        context = {
-            'cliente': cliente_nombre,
-            'facturas_pagadas': facturas_pagadas,
-        }
-        
-        return render(request, 'facturasPagadas.html', context)
+            context = {
+                'cliente': cliente_nombre,
+                'facturas_pagadas': facturas_pagadas,
+            }
+            
+            return render(request, 'facturasPagadas.html', context)
+    except:
+        return redirect ('tipoUser')
 
 
+@login_required
 def pagos_de_factura_pagada(request):
-    if request.method == 'POST' or request.method == 'GET':
-        numero_factura = request.POST.get('factura')
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            numero_factura = request.POST.get('factura')
 
-        try:
-            factura = models.Factura.objects.get(nrFactura=numero_factura)
-        except models.Factura.DoesNotExist:
-            return HttpResponse("Factura no encontrada", status=404)
+            try:
+                factura = models.Factura.objects.get(nrFactura=numero_factura)
+            except models.Factura.DoesNotExist:
+                return HttpResponse("Factura no encontrada", status=404)
 
-        # Obtener los pagos relacionados con esta factura
-        pagos = models.Pago.objects.filter(id_factura=factura.id)
+            # Obtener los pagos relacionados con esta factura
+            pagos = models.Pago.objects.filter(id_factura=factura.id)
 
-        context = {
-            'factura': factura,
-            'pagos': pagos,
-        }
-        return render(request, 'pagosPorFacturaPagada.html', context)
+            context = {
+                'factura': factura,
+                'pagos': pagos,
+            }
+            return render(request, 'pagosPorFacturaPagada.html', context)
+    except:
+        return redirect('tipoUser')
 
-
+@login_required
 def detalles_de_pago(request):
-    if request.method == 'POST' or request.method == 'GET':
-        pago_id = request.POST.get('factura')
-        idFactura = models.Factura.objects.get(nrFactura = pago_id)
-        print (idFactura.id)
-        try:
-            # Obtenemos el pago seleccionado
-            pago = models.Pago.objects.all()
-        except models.Pago.DoesNotExist:
-            return HttpResponse("Pago no encontrado", status=404)
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            pago_id = request.POST.get('factura')
+            idFactura = models.Factura.objects.get(nrFactura = pago_id)
+            print (idFactura.id)
+            try:
+                # Obtenemos el pago seleccionado
+                pago = models.Pago.objects.all()
+            except models.Pago.DoesNotExist:
+                return HttpResponse("Pago no encontrado", status=404)
 
-        # Obtenemos detalles relacionados al pago
-        pagos = []
-        for p in pago:
-            if p.id_factura == idFactura:
-                pagos.append(p)
-        context = {
-            'pagos' : pagos
-        }
-        return render(request, 'pagosYaPagados.html', context)
+            # Obtenemos detalles relacionados al pago
+            pagos = []
+            for p in pago:
+                if p.id_factura == idFactura:
+                    pagos.append(p)
+            context = {
+                'pagos' : pagos
+            }
+            return render(request, 'pagosYaPagados.html', context)
+    except:
+        return redirect ('tipoUser')
 
-
+@login_required
 def registrarCliente(request):
-    if request.method == 'POST' or request.method == 'GET':
-        departamento = request.POST.get('departamento')
-        print(departamento)
-        dic = {
-            'departamento' : departamento
-        }
-        return render(request, 'registrarCliente.html', dic)
+   try:
+        if request.method == 'POST' or request.method == 'GET':
+            departamento = request.POST.get('departamento')
+            print(departamento)
+            dic = {
+                'departamento' : departamento
+            }
+            return render(request, 'registrarCliente.html', dic)
+   except:
+       return redirect('tipouser')
 
+@login_required
 def registrarClientes(request):
-    if request.method == "POST" or request.method == "GET":
-        nombre = request.POST.get('nombre')
-        print(nombre)
-        apellido = request.POST.get('apellido')
-        ci = request.POST.get('cedula')
-        tel = request.POST.get('numero')
+    try:
+        if request.method == "POST" or request.method == "GET":
+            nombre = request.POST.get('nombre')
+            print(nombre)
+            apellido = request.POST.get('apellido')
+            ci = request.POST.get('cedula')
+            tel = request.POST.get('numero')
 
-        enviar = models.Cliente(
-            nombre = nombre,
-            apellido = apellido,
-            cedula = ci,
-            telefono = tel
-        )
+            enviar = models.Cliente(
+                nombre = nombre,
+                apellido = apellido,
+                cedula = ci,
+                telefono = tel
+            )
 
-        enviar.save()
-        departamento = request.POST.get('departamento')
-        print(departamento)
-        palabra = {
-            'palabra' : 'Cliente',
-            'departamento' : departamento 
-        }
+            enviar.save()
+            departamento = request.POST.get('departamento')
+            print(departamento)
+            palabra = {
+                'palabra' : 'Cliente',
+                'departamento' : departamento 
+            }
 
-        return render(request, 'confirmar.html', palabra )
-    
+            return render(request, 'confirmar.html', palabra )
+    except:
+        return redirect ('tipoUser')
+
+@login_required  
 def vistaTienda(request):
     return render(request, 'tiendas.html')
 
+@login_required
 def tasa(request):
-    return render(request, 'actualizaTasa.html')
+    try:
+        tasa = models.Tasa.objects.all()
+        tasaActual = 0
+        for t in tasa:
+            tasaActual = t
+        
+        dic = {
+            'tasa': tasaActual
+        }
+        
+        return render(request, 'actualizaTasa.html', dic)
+    except:
+        return redirect ('tipouser')
 
 
 def ActualizarTasa(request):
-    if request.method == 'POST' or request.method == 'GET':
-        tasaActual = request.POST.get('tasa')
-        
-        tasa = models.Tasa(
-            tasa = tasaActual
-        )
-        
-        tasa.save()
-        dic = {
-            'palabra' : 'Tasa'
-        }
-        return render ( request, 'confirmar.html', dic)
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            tasaActual = request.POST.get('tasa')
+            
+            tasa = models.Tasa(
+                tasa = tasaActual
+            )
+            
+            tasa.save()
+            dic = {
+                'palabra' : 'Tasa'
+            }
+            return render ( request, 'confirmar.html', dic)
+    except:
+        return redirect ('tipoUser')
+    
 def tienda(request):
-     if request.method == 'POST' or request.method == 'GET':
-        nombre = request.POST.get('nombre')
-        print(nombre)
-        enviar = models.Departamentos(
-            departamento = nombre
-        )
-        enviar.save()
-        dic= {
-            'palabra' : 'Tienda'
-        }
-        return render(request, 'confirmar.html', dic)
+    try:
+        if request.method == 'POST' or request.method == 'GET':
+            nombre = request.POST.get('nombre', "").strip()
+            print(f'esta es la tienda: {nombre}')
+            enviar = models.Departamentos(
+                departamento = nombre
+            )
+            enviar.save()
+            dic= {
+                'palabra' : 'Tienda'
+            }
+            return render(request, 'confirmar.html', dic)
+    except:
+        return redirect ('tipoUser')
     
 def usuarios(request):
     return render (request, 'usuarios.html')
@@ -508,22 +580,25 @@ def editarUsuario(request):
     return render(request, 'editarUsuario.html', dic)
 
 def usuarioEditado (request):
-    if request.method == 'POST':
-        usu = request.user
-        contraseña = request.POST.get('contraseña')
-        usuario = request.POST.get('nombre')
+    try:
+        if request.method == 'POST':
+            usu = request.user
+            contraseña = request.POST.get('contraseña')
+            usuario = request.POST.get('nombre')
 
-        if contraseña:
-            usu.set_password(contraseña)
-            update_session_auth_hash(request, usu)  # Mantiene la sesión activa después de cambiar la contraseña
+            if contraseña:
+                usu.set_password(contraseña)
+                update_session_auth_hash(request, usu)  # Mantiene la sesión activa después de cambiar la contraseña
 
-        if usuario:
-            usu.username = usuario
-            
-        usu.save()
+            if usuario:
+                usu.username = usuario
+                
+            usu.save()
 
-        dic = {'palabra': 'Actualizado'}
-        return render(request, 'confirmar.html', dic)
+            dic = {'palabra': 'Actualizado'}
+            return render(request, 'confirmar.html', dic)
+    except:
+        return redirect ('tipoUser')
         
         
 def registrarUsuario (request):

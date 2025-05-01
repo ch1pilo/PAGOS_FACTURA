@@ -21,12 +21,13 @@
         {% csrf_token %}
         <div class="formulario">
             <h1 id="clientesNuevo">
-                Datos de la tienda
+                Ingrese el nombre de la tienda 
             </h1>
+            <h5>No se permite espacio (" ")</h5>
             <div class="monoto">
                 <div class="monto">
                     <label for="">Nombre</label>
-                    <input type="text" name="nombre"> 
+                    <input type="text"  pattern="[^ ]+" name="nombre"> 
                 </div>
     
             </div>
