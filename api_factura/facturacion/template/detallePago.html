@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagar</title>
+    <title>Detalles de pago</title>
 </head>
 <body>
     <header>
@@ -18,7 +18,8 @@
         </div>
        
     </header>
-    <form action="/pago/" class="form2">
+    <form action="/compartir/" method="POST" class="form2">
+
         {% csrf_token %}
         <div class="formulario">
             <div class="cliNf">
@@ -34,7 +35,7 @@
             <div class="deparFecha">
                 <div class="departa">
                     <label for="">Metodo Pago</label>
-                    <input type="text" name="departaentoDato" value="{{ metodoPago }}" readonly> 
+                    <input type="text" name="montoPagado" value="{{ metodoPago }}" readonly> 
                 </div>
                 
                 <div class="fecha">
@@ -49,13 +50,18 @@
             </div>
             <div class="descriip" id="descriip">
                 <label for="">Saldo Abonado</label>
-                <input id="sinAcion" type="text" name="resta" value="{{pago.monto}}" readonly> 
+                <input id="sinAcion" type="text" name="abonado" value="{{pago.monto}}" readonly> 
             </div>
             <div class="monto" id="monto">
                 <label for="">Monto de la factura</label>
                 <input id="sinAcion" type="number" name="monto" value="{{factura.monto}}" readonly> 
             </div>
-            
+            <div class="boto">
+                <button type="submit"> 
+                    <p>Compartir</p>
+                    <img src="{% static 'img/compartir.png' %}" alt="">
+                </button>
+            </div>
         </div>
     </form>
     <footer>

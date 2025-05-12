@@ -1,0 +1,75 @@
+Date: 12/5/2025
+Time: 10:53
+Phone Number: +584246018457
+Message: este es un mensaje
+--------------------
+Date: 12/5/2025
+Time: 10:53
+Phone Number: +584246018457
+Message: este es un mensaje
+--------------------
+Date: 12/5/2025
+Time: 11:3
+Phone Number: +584246018457
+Message: este es un mensaje
+--------------------
+Date: 12/5/2025
+Time: 11:27
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: None, Monto de su factura: 1000.0, saldo restante:
+--------------------
+Date: 12/5/2025
+Time: 11:36
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: None, Monto de su factura: 1000.0, saldo restante:
+--------------------
+Date: 12/5/2025
+Time: 11:38
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: None, Monto de su factura: 1000.0, saldo restante:
+--------------------
+Date: 12/5/2025
+Time: 11:45
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 500.0, Monto de su factura: 1000.0, saldo restante:
+--------------------
+Date: 12/5/2025
+Time: 11:50
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 500.0, Monto de su factura: 1000.0, saldo restante:
+--------------------
+Date: 12/5/2025
+Time: 11:51
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 500.0, Monto de su factura: 1000.0, saldo restante:0
+--------------------
+Date: 12/5/2025
+Time: 11:52
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 500.0, Monto de su factura: 1000.0, saldo restante:0
+--------------------
+Date: 12/5/2025
+Time: 11:54
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 500.0, Monto de su factura: 1000.0, saldo restante:0
+--------------------
+Date: 12/5/2025
+Time: 11:56
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 500.0, Monto de su factura: 1000.0, saldo restante:500.0
+--------------------
+Date: 12/5/2025
+Time: 12:33
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 294.0bs, Monto de su factura: 1000.0bs, saldo restante:1000.0bs
+--------------------
+Date: 12/5/2025
+Time: 12:38
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 150.0bs, Monto de su factura: 1000.0bs, saldo restante:1000.0bs
+--------------------
+Date: 12/5/2025
+Time: 12:40
+Phone Number: +584246018457
+Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 150.0bs, Monto de su factura: 1000.0bs, saldo restante:944.0bs
+--------------------

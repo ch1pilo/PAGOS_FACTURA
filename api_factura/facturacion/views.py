@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 import json
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, JsonResponse
+import pywhatkit
 from rest_framework import status
 from facturacion import models
 from rest_framework.views import APIView
@@ -294,8 +295,19 @@ def pagogenerado(request):
             facturaID = models.Factura.objects.get(nrFactura = factura)
             monedaID = models.Moneda.objects.get(id = monea)
             if monedaID.nombre_moneda == 'USD':
-                monto = facturaID.tasa * int(monto)
+                print(f'tasa {facturaID.tasa}')
                 print(monto)
+                print (f'{facturaID.tasa} * {monto}')
+                
+                tasaFloat = facturaID.tasa
+                convertir = float (tasaFloat)
+                montofloant = float(monto)
+                montototal = convertir * montofloant
+                print(montototal)
+                print (type(convertir))
+                print (type(montofloant))
+            else:
+                montototal = monto
             
             descripcion = request.GET.get('descripcion')
             if descripcion == None:
@@ -304,7 +316,7 @@ def pagogenerado(request):
             
             enviar = models.Pago(
                 id_factura = facturaID,
-                monto = monto,
+                monto = montototal,
                 fecha = fecha,
                 metodo_pago = metodo,
                 id_moneda = monedaID,
@@ -623,3 +635,41 @@ def registrarUsuario (request):
 
     return render(request, "registrar_usuario.html")   
             
+
+
+def compartir(request):
+    try:
+        if request.method == 'POST':
+            factura = request.POST.get('factura')
+            print(f'__________esta es la factura {factura}')
+            facturaObjeto = models.Factura.objects.get(nrFactura = factura )
+            idcliente = facturaObjeto.id_cliente
+            print(f'__________este es el id{idcliente.telefono}')
+            print(f'__________este es el id{facturaObjeto.id}')
+
+            numero_destino=idcliente.telefono
+            monto_abonado = request.POST.get('abonado')
+            monto_factura = request.POST.get('monto')
+
+            
+            monto_restar = 0
+            todos_pagos_factura = models.Pago.objects.all()
+            print('aqui')
+            for p in todos_pagos_factura:
+                if p.id_factura.id == facturaObjeto.id:
+                    print(p.monto)
+                    monto_restar += p.monto
+
+            
+                    
+            mensaje = f'Numero de su factura: {factura}, Saldo abonado: {monto_abonado}bs, Monto de su factura: {monto_factura}bs, saldo restante:{monto_restar-monto_factura}bs' 
+            
+            pywhatkit.sendwhatmsg_instantly(numero_destino, mensaje, wait_time=20)
+
+            palabra = {
+                'palabra' : 'Mensaje'
+            }
+            return render (request, 'confirmar.html', palabra)
+    except:
+        print('algo salio mal')
+        return redirect('tipoUser')

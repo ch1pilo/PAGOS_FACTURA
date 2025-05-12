@@ -45,6 +45,9 @@ urlpatterns = [
     path("formulariousuario/", views.formulariousuario, name='formulariousuario'),
     path("tasa/", views.tasa, name='tasa'),
     path("ActualizarTasa/", views.ActualizarTasa, name='ActualizarTasa'),
+    path("compartir/", views.compartir, name='compartir'),
+
+
 
     path("", include(router.urls)),
 ]                                     

@@ -292,7 +292,7 @@ select{
     border: none;
 }
 .boto p{
-    width: 50px;
+    width: 100px;
     color: #f3f3f3;
     font-size: 20px;
 }
@@ -350,4 +350,8 @@ a{
 footer button{
     background-color: transparent;
     border: none;
+}
+
+#compartir button{
+    width: 100%;
 }
