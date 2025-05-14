@@ -143,17 +143,11 @@ def tipoUser(request):
 @login_required
 def departamento(request):
     if request.method == 'POST' or request.method == 'GET':
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
         depaar = request.POST.get('departamento', "").strip()
         print(f'este es el departamento {depaar}')
-=======
-=======
->>>>>>> Stashed changes
         depaar = request.POST.get('departamento') 
         print(f'el nombre del departamento es {depaar}')
 
->>>>>>> Stashed changes
         try:
             # Busca el departamento
             departamento = models.Departamentos.objects.get(departamento=depaar)
@@ -732,7 +726,6 @@ def ActualizarTasa(request):
         return redirect ('tipoUser')
     
 def tienda(request):
-<<<<<<< Updated upstream
     try:
         if request.method == 'POST' or request.method == 'GET':
             nombre = request.POST.get('nombre', "").strip()
@@ -745,29 +738,28 @@ def tienda(request):
                 'palabra' : 'Tienda'
             }
             return render(request, 'confirmar.html', dic)
+        if request.method == 'POST' or request.method == 'GET':
+            nombre = request.POST.get('nombre')
+            virificar_palabras = nombre.split()
+            n=0
+            for i in virificar_palabras:
+                n+=1
+                if n > 2:
+                    messages = ('El nombre de la tienda')
+                    return render(request, 'tienda.html')
+            
+            print(nombre)
+            enviar = models.Departamentos(
+                departamento = nombre
+            )
+            enviar.save()
+            dic= {
+                'palabra' : 'Tienda'
+            }
+            return render(request, 'confirmar.html', dic)
     except:
         return redirect ('tipoUser')
-=======
-     if request.method == 'POST' or request.method == 'GET':
-        nombre = request.POST.get('nombre')
-        virificar_palabras = nombre.split()
-        n=0
-        for i in virificar_palabras:
-            n+=1
-            if n > 2:
-                messages = ('El nombre de la tienda')
-                return render(request, 'tienda.html')
-        
-        print(nombre)
-        enviar = models.Departamentos(
-            departamento = nombre
-        )
-        enviar.save()
-        dic= {
-            'palabra' : 'Tienda'
-        }
-        return render(request, 'confirmar.html', dic)
->>>>>>> Stashed changes
+     
     
 def usuarios(request):
     return render (request, 'usuarios.html')
