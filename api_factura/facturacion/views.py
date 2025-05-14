@@ -143,12 +143,18 @@ def tipoUser(request):
 @login_required
 def departamento(request):
     if request.method == 'POST' or request.method == 'GET':
+<<<<<<< Updated upstream
         depaar = request.POST.get('departamento', "").strip()
         print(f'este es el departamento {depaar}')
+=======
+        depaar = request.POST.get('departamento') 
+        print(f'el nombre del departamento es {depaar}')
+
+>>>>>>> Stashed changes
         try:
             # Busca el departamento
             departamento = models.Departamentos.objects.get(departamento=depaar)
-
+            print(f'el nombre del departamento es {departamento}')
             # Obtiene todos los clientes
             todos_clientes = [cliente.nombre for cliente in models.Cliente.objects.all()]
             todos_pagos = models.Pago.objects.all()
@@ -186,6 +192,7 @@ def departamento(request):
             return render(request, 'cliente.html', contexto)
 
         except models.Departamentos.DoesNotExist:
+            print('algo no se cumple')
             return redirect('tipoUser')
 
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
@@ -722,6 +729,7 @@ def ActualizarTasa(request):
         return redirect ('tipoUser')
     
 def tienda(request):
+<<<<<<< Updated upstream
     try:
         if request.method == 'POST' or request.method == 'GET':
             nombre = request.POST.get('nombre', "").strip()
@@ -736,6 +744,27 @@ def tienda(request):
             return render(request, 'confirmar.html', dic)
     except:
         return redirect ('tipoUser')
+=======
+     if request.method == 'POST' or request.method == 'GET':
+        nombre = request.POST.get('nombre')
+        virificar_palabras = nombre.split()
+        n=0
+        for i in virificar_palabras:
+            n+=1
+            if n > 2:
+                messages = ('El nombre de la tienda')
+                return render(request, 'tienda.html')
+        
+        print(nombre)
+        enviar = models.Departamentos(
+            departamento = nombre
+        )
+        enviar.save()
+        dic= {
+            'palabra' : 'Tienda'
+        }
+        return render(request, 'confirmar.html', dic)
+>>>>>>> Stashed changes
     
 def usuarios(request):
     return render (request, 'usuarios.html')
