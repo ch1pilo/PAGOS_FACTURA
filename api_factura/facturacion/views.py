@@ -7,13 +7,38 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, JsonResponse
-import pywhatkit
 from rest_framework import status
 from facturacion import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+# decorators.py
+from functools import wraps
+from django.http import HttpResponseForbidden
+
+def departamento_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden("Acceso denegado")
+            
+        if request.user.is_superuser or request.user.profile.tipo_usuario == 'admin':
+            return view_func(request, *args, **kwargs)
+            
+        # Obtener el departamento de la URL o parámetro
+        departamento_id = kwargs.get('departamento_id')
+        if not departamento_id:
+            return HttpResponseForbidden("Departamento no especificado")
+            
+        if request.user.profile.departamento.id != int(departamento_id):
+            return HttpResponseForbidden("No tienes acceso a este departamento")
+            
+        return view_func(request, *args, **kwargs)
+        
+    # Marcar la vista para el middleware
+    _wrapped_view.departamento_required = True
+    return _wrapped_view
 
 # Crear perfil automáticamente cuando se crea un usuario
 @receiver(post_save, sender=User)
@@ -30,6 +55,52 @@ def guardar_perfil_usuario(sender, instance, **kwargs):
 def mostrar_formulario(request):
     return render(request, 'registration/login.html')
 
+
+def registrarUsuario(request):
+    if request.method == 'POST':
+        usuario = request.POST.get('nombre')
+        contraseña = request.POST.get('contraseña')
+        departamento_id = request.POST.get('tienda')  # Asegúrate de que el template envía el ID
+        
+        if usuario and contraseña and departamento_id:  # Verifica que todos los campos estén
+            try:
+                # Verifica si el usuario ya existe
+                if User.objects.filter(username=usuario).exists():
+                    messages.error(request, 'El usuario ya existe')
+                    return redirect('registrar_usuario')
+                
+                email = f"{usuario}@{usuario}.com"
+                
+                # Crea el usuario
+                nuevo_usuario = User.objects.create_user(
+                    username=usuario,
+                    email=email,
+                    password=contraseña
+                )
+                
+                # Obtiene el departamento
+                departamento = models.Departamentos.objects.get(id=departamento_id)
+                
+                # Crea o actualiza el perfil
+                models.Profile.objects.update_or_create(
+                    user=nuevo_usuario,
+                    defaults={
+                        'tipo_usuario': 'tienda',
+                        'departamento': departamento
+                    }
+                )
+                
+                messages.success(request, 'Usuario creado exitosamente')
+                return redirect('lista_usuarios')
+                
+            except Exception as e:
+                messages.error(request, f'Error al crear usuario: {str(e)}')
+                return redirect('usuarios')
+
+    tiendas = models.Departamentos.objects.all()
+    return render(request, "usuarios"
+    ".html", {'tiendas': tiendas})
+            
 
 # API de login
 class LoginAPI(APIView):
@@ -54,6 +125,16 @@ def tipoUser(request):
             dic = {'depar': departamento}
             return render(request, 'index.html', dic)
         
+        if user_profile.tipo_usuario == "tienda":
+            tienda = user_profile.departamento
+            d = []
+            depa = models.Departamentos.objects.get(departamento = tienda)
+            d.append(depa)
+            for i in d:
+                print(i)
+            dic = {'depar': d}
+            return render(request, 'index.html', dic)
+
         return render(request, 'index.html')
     except models.Profile.DoesNotExist:
         return render(request, 'login.html')
@@ -108,6 +189,8 @@ def departamento(request):
             return redirect('tipoUser')
 
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
+
+
 @login_required
 def datosFactura(request):
     try:
@@ -167,10 +250,27 @@ def generarFactura(request):
             
             print(idDepartamento.departamento)
             enviar.save()
+            
+
+
+
+             
+            factura = enviar
+            idcliente = factura.id_cliente
+            numerotelefono = idcliente.telefono
+            formato = numerotelefono[1:]
+            numero_destino = f'+58{formato}'
+            print(numero_destino)
+
+            mensaje = f'Numero de su factura: {factura}, Monto de su factura: {monto}bs'
+
             palabra = {
                 'palabra' : 'Factura',
-                'departamento' : depart
+                'departamento' : depart,
+                'mensaje' : mensaje,
+                'tlf' : numero_destino
             }
+
             return render(request, 'confirmar.html', palabra)
         else:
             dic = {
@@ -231,6 +331,9 @@ def datosFacturaPagarPagos(request):
             print("Métodos de pago obtenidos:", metodosPagos)
             print("Lista de métodos por moneda:", listaDeMonedasMetodos)
             metodos = models.MetodosPago.objects.all()
+            tasa_actual = models.Tasa.objects.all()
+            for i in tasa_actual:
+                tasa = i
             dic = {
                 'moneda': monedas,
                 'metodo': metodos,  # Todos los métodos de pago en general
@@ -238,8 +341,9 @@ def datosFacturaPagarPagos(request):
                 'fecha': fecha,
                 'usuario': usuario,
                 'factura': facturas,
+                'tasa_actual' : tasa
             }
-
+          
             return render(request, 'pago.html', dic)
     except:
         return redirect('tipoUser')
@@ -325,7 +429,24 @@ def pagogenerado(request):
                 
             )
             enviar.save()
+
+
+            factura = facturaID
+            idcliente = factura.id_cliente
+            numerotelefono = idcliente.telefono
+            formato = numerotelefono[1:]
+            numero_destino = f'+58{formato}'
+            print(numero_destino)
+
+            mensaje = f'Numero de su factura: {factura}, Monto de su pago: {monto}bs'
+
             palabra = {
+                
+            }
+
+            palabra = {
+                'mensaje' : mensaje,
+                'tlf' : numero_destino,
                 'palabra' : 'Pago',
                 'departamento' : facturaID.idDepartamento
             }
@@ -363,16 +484,45 @@ def datosDelPago (request):
     try:
         if request.method == 'POST' or request.method == 'GET':
             datosID = request.POST.get('datosDelPago')
+
             pago = models.Pago.objects.get(id = datosID)
             nrFactura = pago.id_factura
             fecha = pago.fecha.strftime("%Y-%m-%d")
             factura = models.Factura.objects.get(nrFactura = nrFactura)
+            idcliente = factura.id_cliente
+            numerotelefono =idcliente.telefono
+            formato = numerotelefono[1:]
+            numero_destino = f'+58{formato}'
+            print(numero_destino)
+
+
+            monto_factura = factura.monto
+            monto_abonado = pago.monto
+            monto_restar = 0
+            todos_pagos_factura = models.Pago.objects.all()
+            for p in todos_pagos_factura:
+                if p.id_factura.id == factura.id:
+                    print(p.monto)
+                    print(f'restar {monto_restar}')
+                    reto = float(p.monto)
+                    monto_restar += reto
+            print(f'el monto {monto_restar}')
+
+            print('aqui')
+            
+            montorestante = monto_restar-float(monto_factura)
+            print(montorestante)
+            mensaje = f'Numero de su factura: {factura}, Saldo abonado: {monto_abonado}bs, Monto de su factura: {monto_factura}bs, saldo restante:{montorestante}bs'
+            
+
             metodoPago = models.MetodosPago.objects.get(id = pago.metodo_pago )
             dic = {
                 'metodoPago' : metodoPago,
                 'fecha' : fecha,
                 'pago' : pago,
-                'factura' : factura
+                'factura' : factura,
+                'mensaje' : mensaje,
+                'tlf' : numero_destino
             }
             
             return render(request, 'detallePago.html', dic)
@@ -525,26 +675,36 @@ def registrarClientes(request):
 
 @login_required  
 def vistaTienda(request):
-    return render(request, 'tiendas.html')
+    user_profile = models.Profile.objects.get(user=request.user)
+    if user_profile.tipo_usuario == "admin":
+        return render(request, 'tiendas.html')
+    else:
+        return redirect('tipoUser')
 
 @login_required
 def tasa(request):
-    try:
-        tasa = models.Tasa.objects.all()
-        tasaActual = 0
-        for t in tasa:
-            tasaActual = t
-        
-        dic = {
-            'tasa': tasaActual
-        }
-        
-        return render(request, 'actualizaTasa.html', dic)
-    except:
-        return redirect ('tipouser')
 
+    user_profile = models.Profile.objects.get(user=request.user)
+    print(user_profile.tipo_usuario)
+    if user_profile.tipo_usuario == 'admin':
+        try:
+            tasa = models.Tasa.objects.all()
+            tasaActual = 0
+            for t in tasa:
+                tasaActual = t
+            
+            dic = {
+                'tasa': tasaActual
+            }
+            
+            return render(request, 'actualizaTasa.html', dic)
+        except:
+            return redirect ('tipoUser')
+    else:
+        return redirect ('usuarios')
 
 def ActualizarTasa(request):
+    
     try:
         if request.method == 'POST' or request.method == 'GET':
             tasaActual = request.POST.get('tasa')
@@ -581,7 +741,18 @@ def usuarios(request):
     return render (request, 'usuarios.html')
 
 def formulariousuario(request):
-    return render(request, 'registrarUsuario.html')
+    user_profile = models.Profile.objects.get(user=request.user)
+    print(user_profile.tipo_usuario)
+    if user_profile.tipo_usuario == 'admin':
+        tiendas = models.Departamentos.objects.all()
+        for t in tiendas:
+            print(t.departamento)
+        dic = {
+            'tiendas':tiendas
+        }
+        return render(request, 'registrarUsuario.html', dic)
+    else:
+        return redirect ('usuarios')
 
 def editarUsuario(request):
     usuario = request.user
@@ -613,63 +784,4 @@ def usuarioEditado (request):
         return redirect ('tipoUser')
         
         
-def registrarUsuario (request):
-    if request.method == 'POST':
-        usuario = request.POST.get('nombre')
-        contraseña = request.POST.get('contraseña')
 
-        if usuario and contraseña:
-            email = f"{usuario}@{usuario}.com"  # Generar correo ficticio
-
-            nuevo_usuario = User.objects.create(
-                username=usuario,
-                email=email
-            )
-            nuevo_usuario.set_password(contraseña)  # Guardar contraseña de manera segura
-            nuevo_usuario.save()
-
-            dic = {
-                'palabra' : 'Usuario'
-            }
-            return render(request, "confirmar.html", dic)  # Redirige a la página de perfil
-
-    return render(request, "registrar_usuario.html")   
-            
-
-
-def compartir(request):
-    try:
-        if request.method == 'POST':
-            factura = request.POST.get('factura')
-            print(f'__________esta es la factura {factura}')
-            facturaObjeto = models.Factura.objects.get(nrFactura = factura )
-            idcliente = facturaObjeto.id_cliente
-            print(f'__________este es el id{idcliente.telefono}')
-            print(f'__________este es el id{facturaObjeto.id}')
-
-            numero_destino=idcliente.telefono
-            monto_abonado = request.POST.get('abonado')
-            monto_factura = request.POST.get('monto')
-
-            
-            monto_restar = 0
-            todos_pagos_factura = models.Pago.objects.all()
-            print('aqui')
-            for p in todos_pagos_factura:
-                if p.id_factura.id == facturaObjeto.id:
-                    print(p.monto)
-                    monto_restar += p.monto
-
-            
-                    
-            mensaje = f'Numero de su factura: {factura}, Saldo abonado: {monto_abonado}bs, Monto de su factura: {monto_factura}bs, saldo restante:{monto_restar-monto_factura}bs' 
-            
-            pywhatkit.sendwhatmsg_instantly(numero_destino, mensaje, wait_time=20)
-
-            palabra = {
-                'palabra' : 'Mensaje'
-            }
-            return render (request, 'confirmar.html', palabra)
-    except:
-        print('algo salio mal')
-        return redirect('tipoUser')

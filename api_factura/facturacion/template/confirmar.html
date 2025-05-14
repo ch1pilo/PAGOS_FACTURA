@@ -20,6 +20,12 @@
         {% csrf_token %}
         <input type="hidden" id="con" name="departamento" value="{{departamento}}">
         <button type="submit">Continuar</button>
+        <div class="boto">
+            <a href="https://wa.me/{{ tlf }}?text={{ mensaje }}" target="_blank"> 
+            <p>Compartir</p>
+            <img src="{% static 'img/compartir.png' %}" alt="Compartir">
+        </a>
+        </div>
     </form>
 </body>
 </html>

@@ -36,8 +36,16 @@
                     <label for="">Contraseña</label>
                     <input type="text" name="contraseña" maxlength="10"> 
                 </div>
-                
-                
+            </div>
+            <div class="cedulaTelefono" id="espaciado">
+                <div class="departa">
+                    <select name="tienda" id="">
+                        <option value="">...</option> 
+                        {%for t in tiendas%}
+                            <option value="{{t.id}}">{{t.departamento}}</option>    
+                        {%endfor%}
+                    </select>
+                </div>
             </div>
             <div class="boto">
                 <button type="submit">

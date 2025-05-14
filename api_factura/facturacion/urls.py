@@ -19,6 +19,7 @@ router.register(r'departamento', api.DepartamentoViewSet, basename='departamento
 
 
 urlpatterns = [
+    path('departamento/<int:departamento_id>/facturas/', views.departamento_required, name='lista_facturas'),
     path('api/login/', views.LoginAPI.as_view(), name="login"),
     path('formulario/', views.mostrar_formulario, name='mostrar_formulario'),
     path('tipoUser/', views.tipoUser, name='tipoUser'),
@@ -45,7 +46,6 @@ urlpatterns = [
     path("formulariousuario/", views.formulariousuario, name='formulariousuario'),
     path("tasa/", views.tasa, name='tasa'),
     path("ActualizarTasa/", views.ActualizarTasa, name='ActualizarTasa'),
-    path("compartir/", views.compartir, name='compartir'),
 
 
 

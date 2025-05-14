@@ -73,3 +73,8 @@ Time: 12:40
 Phone Number: +584246018457
 Message: Numero de su factura: Factura Nº D25120510, Saldo abonado: 150.0bs, Monto de su factura: 1000.0bs, saldo restante:944.0bs
 --------------------
+Date: 12/5/2025
+Time: 15:5
+Phone Number: +58 4246018457
+Message: Numero de su factura: Factura Nº D25120547, Saldo abonado: 4900.0bs, Monto de su factura: 100.0bs, saldo restante:4800.0bs
+--------------------

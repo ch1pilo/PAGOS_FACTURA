@@ -61,7 +61,8 @@ class MetodosPago(models.Model):
 
 class Pago(models.Model):
     id_factura = models.ForeignKey(Factura, on_delete=models.RESTRICT)
-    monto = models.FloatField()
+    montoUSD = models.FloatField()
+    montoBS = models.FloatField()
     fecha = models.DateField()
     id_moneda = models.ForeignKey(Moneda, on_delete=models.RESTRICT)
     metodo_pago = models.CharField(max_length=30)
@@ -71,12 +72,17 @@ class Pago(models.Model):
         return f"Pago #{self.id} - Factura {self.id_factura}"
     
 class Profile(models.Model): 
+    TIPO_USUARIO_CHOICES = [
+        ('admin', 'Administrador'),
+        ('tienda', 'Usuario de Tienda'),
+    ]
     
-    tipo_usuario = models.CharField(max_length=20, default="admin") 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Relación uno a uno con User
+    tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, default="tienda")
+    departamento = models.ForeignKey(Departamentos, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user.username} - {self.tipo_usuario}'
+        return f'{self.user.username} - {self.tipo_usuario} - {self.departamento}'
 
 class Tasa(models.Model):
     tasa = models.CharField(max_length=5)

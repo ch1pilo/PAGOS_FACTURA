@@ -18,7 +18,7 @@
         </div>
        
     </header>
-    <form action="/compartir/" method="POST" class="form2">
+    <form class="form2">
 
         {% csrf_token %}
         <div class="formulario">
@@ -45,7 +45,7 @@
             </div>
            
             <div class="descriip" id="descriip">
-                <label for="">Usuario Que Intersede</label>
+                <label for="">Usuario Que Intercede</label>
                 <input id="sinAcion" type="text" name="descripcion" value="{{pago.id_usuario}}" readonly> 
             </div>
             <div class="descriip" id="descriip">
@@ -57,10 +57,10 @@
                 <input id="sinAcion" type="number" name="monto" value="{{factura.monto}}" readonly> 
             </div>
             <div class="boto">
-                <button type="submit"> 
+                <a href="https://wa.me/{{ tlf }}?text={{ mensaje }}" target="_blank"> 
                     <p>Compartir</p>
-                    <img src="{% static 'img/compartir.png' %}" alt="">
-                </button>
+                    <img src="{% static 'img/compartir.png' %}" alt="Compartir">
+                </a>
             </div>
         </div>
     </form>
