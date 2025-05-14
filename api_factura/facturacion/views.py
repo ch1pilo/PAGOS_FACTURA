@@ -144,9 +144,12 @@ def tipoUser(request):
 def departamento(request):
     if request.method == 'POST' or request.method == 'GET':
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         depaar = request.POST.get('departamento', "").strip()
         print(f'este es el departamento {depaar}')
 =======
+=======
+>>>>>>> Stashed changes
         depaar = request.POST.get('departamento') 
         print(f'el nombre del departamento es {depaar}')
 
