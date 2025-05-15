@@ -48,9 +48,13 @@
                 <label for="">Usuario Que Intercede</label>
                 <input id="sinAcion" type="text" name="descripcion" value="{{pago.id_usuario}}" readonly> 
             </div>
-            <div class="descriip" id="descriip">
-                <label for="">Saldo Abonado</label>
-                <input id="sinAcion" type="text" name="abonado" value="{{pago.monto}}" readonly> 
+            <div class="descriip" id="monedas">
+                <label for="">Saldo Abonado USD</label>
+                <input id="sinAcion" type="text" value="{{pago.montoUSD}}" readonly> 
+            </div>
+            <div class="descriip" id="monedas">
+                <label for="">Saldo Abonado BS</label>
+                <input id="sinAcion" type="text" value="{{pago.montoBS}}" readonly>
             </div>
             <div class="monto" id="monto">
                 <label for="">Monto de la factura</label>

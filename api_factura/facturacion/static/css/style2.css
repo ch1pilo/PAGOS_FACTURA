@@ -329,6 +329,18 @@ select{
     background-color: #db0f0b;
     border-radius: 30px;
 }
+#monedas input{
+    width: auto;
+}
+#monedas{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+
+
 footer {
     height: 90px;
     background-color: #f8f320;

@@ -78,6 +78,9 @@
                 </select>
             </div>
 
+            <input type="hidden" id="monto-principal" name="monto_principal" value="">
+            <input type="hidden" id="monto-equivalente-valor" name="monto_equivalente" value="">
+            
             <div class="monto">
                 <label for="">Monto</label>
                 <input id="monto-input" type="number" name="monto" required max="9000000" step="0.01" oninput="calcularEquivalente()">  
@@ -94,7 +97,7 @@
                 <label for="">Descripcion</label>
                 <input type="text" name="descripcion" placeholder="Descripcion"> 
             </div>
-
+            
             <div class="boto">
                 <button type="submit">
                     <p>Abonar</p>
@@ -113,6 +116,7 @@
     </footer>
 
     <script>
+
         // Configuración inicial
         const ID_MONEDA_USD = "3"; // Ajusta según tu base de datos
         const ID_MONEDA_BS = "2";  // Ajusta según tu base de datos
@@ -157,61 +161,66 @@
             }
         }
         
-        // Función para calcular el equivalente
+
+
         function calcularEquivalente() {
-            try {
-                const monedaSeleccionada = document.getElementById("moneda").value;
-                const montoInput = document.getElementById("monto-input");
-                const monto = parseFloat(montoInput.value) || 0;
-                const equivalenteInput = document.getElementById("equivalente-conversion");
-                
-                // Validar monto positivo
-                if (monto < 0) {
-                    montoInput.value = Math.abs(monto);
-                    return calcularEquivalente();
-                }
-
-                if (monedaSeleccionada === ID_MONEDA_USD) {
-                    // Convertir USD a BS
-                    const equivalente = monto * tasaCambio;
-                    equivalenteInput.value = equivalente.toLocaleString('es-VE', {
-                        style: 'currency',
-                        currency: 'VES',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                } else if (monedaSeleccionada === ID_MONEDA_BS) {
-                    // Convertir BS a USD
-                    const equivalente = monto / tasaCambio;
-                    equivalenteInput.value = equivalente.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                } else {
-                    equivalenteInput.value = "Seleccione moneda válida";
-                }
-            } catch (error) {
-                console.error("Error en cálculo de equivalente:", error);
+        try {
+            const monedaSeleccionada = document.getElementById("moneda").value;
+            const montoInput = document.getElementById("monto-input");
+            const monto = parseFloat(montoInput.value) || 0;
+            const equivalenteInput = document.getElementById("equivalente-conversion");
+            const montoPrincipalHidden = document.getElementById("monto-principal");
+            const montoEquivalenteHidden = document.getElementById("monto-equivalente-valor");
+            
+            // Validar monto positivo
+            if (monto < 0) {
+                montoInput.value = Math.abs(monto);
+                return calcularEquivalente();
             }
+
+            if (monedaSeleccionada === ID_MONEDA_USD) {
+                // Convertir USD a BS
+                const equivalente = monto * tasaCambio;
+                equivalenteInput.value = equivalente.toLocaleString('es-VE', {
+                    style: 'currency',
+                    currency: 'VES',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
+                // Guardar valores en campos ocultos
+                montoPrincipalHidden.value = monto; // Monto en USD
+                montoEquivalenteHidden.value = equivalente; // Monto en BS
+                
+            } else if (monedaSeleccionada === ID_MONEDA_BS) {
+                // Convertir BS a USD
+                const equivalente = monto / tasaCambio;
+                equivalenteInput.value = equivalente.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                
+                // Guardar valores en campos ocultos
+                montoPrincipalHidden.value = monto; // Monto en BS
+                montoEquivalenteHidden.value = equivalente; // Monto en USD
+            } else {
+                equivalenteInput.value = "Seleccione moneda válida";
+                montoPrincipalHidden.value = "";
+                montoEquivalenteHidden.value = "";
+            }
+        } catch (error) {
+            console.error("Error en cálculo de equivalente:", error);
         }
+    }
 
-        // Event listeners
-        document.getElementById("moneda").addEventListener("change", function() {
-            actualizarMetodos();
-            actualizarNombresMoneda();
-            calcularEquivalente();
-        });
-
-        document.getElementById("monto-input").addEventListener("input", calcularEquivalente);
-
-        // Inicialización
-        window.addEventListener('DOMContentLoaded', (event) => {
-            actualizarMetodos();
-            actualizarNombresMoneda();
-            calcularEquivalente();
-        });
-    </script>
+    // Asegúrate de llamar a calcularEquivalente() cuando cambie la moneda
+    document.getElementById("moneda").addEventListener("change", function() {
+        actualizarMetodos();
+        actualizarNombresMoneda();
+        calcularEquivalente();
+    });
+</script>
 </body>
 </html>
