@@ -11,6 +11,14 @@
 </head>
 <body>
     <header>
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
         <div class="titulo1">
             <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
             <h1>Crear Cliente</h1>
@@ -37,28 +45,12 @@
             <div class="cedulaTelefono" id="espaciado">
                 <div class="departa">
                     <label for="">Cedula</label>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
                     <input type="text" name="cedula" maxlength="8"> 
-=======
-                    <input type="text" name="cedula" maxlength="7"> 
->>>>>>> Stashed changes
-=======
-                    <input type="text" name="cedula" maxlength="7"> 
->>>>>>> Stashed changes
                 </div>
                 
                 <div class="fecha">
                     <label for="">Telefono</label>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
                     <input name="numero"  type="number" max="50000000000" value="+58 "> 
-=======
-                    <input name="numero"  type="number"> 
->>>>>>> Stashed changes
-=======
-                    <input name="numero"  type="number"> 
->>>>>>> Stashed changes
                 </div>    
             </div>
             <div class="boto">
@@ -77,6 +69,51 @@
             </ul>
         </div>
     </footer>
+    <script>
+         // Validación en tiempo real para espacios
+        function checkSpaces(input) {
+            const errorSpaces = document.getElementById('errorSpaces');
+            if (input.value.includes(' ')) {
+                errorSpaces.style.display = 'block';
+                input.style.borderColor = 'red';
+            } else {
+                errorSpaces.style.display = 'none';
+                input.style.borderColor = '';
+            }
+        }
+        
+        // Validación antes de enviar el formulario
+        function validateForm() {
+            const nombreInput = document.getElementById('nombreTienda');
+            const nombre = nombreInput.value.trim();
+            
+            if (!nombre) {
+                alert('El nombre de la tienda no puede estar vacío');
+                return false;
+            }
+            
+            if (nombre.includes(' ')) {
+                alert('El nombre no puede contener espacios');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Cerrar mensajes al hacer clic en la X
+        document.querySelectorAll('.closebtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+        
+        // Ocultar mensajes después de 5 segundos
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.display = 'none';
+            });
+        }, 5000);
+    </script>
 
 </body>
 </html>

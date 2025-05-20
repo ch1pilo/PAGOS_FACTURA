@@ -151,6 +151,7 @@ h2{
 }
 .inf p{
     margin-bottom: 15px;
+    text-align: left;
 }
 .flecha{
     display: flex;
@@ -329,10 +330,18 @@ select{
     background-color: #db0f0b;
     border-radius: 30px;
 }
-<<<<<<< Updated upstream
-=======
+#monedas input{
+    width: auto;
+}
+#monedas{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
 
->>>>>>> Stashed changes
+
+
 footer {
     height: 90px;
     background-color: #f8f320;
@@ -368,3 +377,48 @@ footer button{
 #compartir button{
     width: 100%;
 }
+
+/* Estilos para los mensajes */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            width: 80%;
+            margin: 10px auto;
+            text-align: center;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .closebtn {
+            margin-left: 15px;
+            color: inherit;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .closebtn:hover {
+            color: black;
+        }
+        
+        #errorSpaces {
+            color: red;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+        }

@@ -28,6 +28,14 @@
     </style>
 </head>
 <body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
     <header>
         <div class="titulo1">
             <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
@@ -58,9 +66,9 @@
             <div class="deparFecha">
                 <div class="departa">
                     <label for="">Moneda</label>
-                    <select name="moneda" id="moneda" onchange="actualizarMetodos(); actualizarNombresMoneda();">
+                    <select name="moneda" id="moneda" onchange="actualizarMetodos(); actualizarNombresMoneda(); calcularEquivalente();">
                         {% for m in moneda %}
-                        <option value="{{ m.id }}" data-nombre="{{ m.nombre_moneda }}">{{ m.nombre_moneda }}</option> 
+                        <option value="{{ m.id }}" data-nombre="{{ m.nombre_moneda }}" data-simbolo="{{ m.simbolo }}">{{ m.nombre_moneda }}</option> 
                         {% endfor %}
                     </select>
                 </div>
@@ -78,10 +86,11 @@
                 </select>
             </div>
 
+            <input type="hidden" id="monto-principal" name="monto_principal" value="">
+            <input type="hidden" id="monto-equivalente-valor" name="monto_equivalente" value="">
+            
             <div class="monto">
                 <label for="">Monto</label>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
                 <input id="monto-input" type="number" name="monto" required max="9000000" step="0.01" oninput="calcularEquivalente()">  
             </div>
 
@@ -90,19 +99,13 @@
                 <label id="label-equivalente">Equivalente en USD</label>
                 <input id="equivalente-conversion" type="text" readonly>
                 <input type="hidden" id="tasa-cambio" value="{{ tasa_actual }}">
-=======
-                <input id="colorRed" type="number" name="monto" required placeholder="Monto a Pagar" max="1000000">  
->>>>>>> Stashed changes
-=======
-                <input id="colorRed" type="number" name="monto" required placeholder="Monto a Pagar" max="1000000">  
->>>>>>> Stashed changes
             </div>
 
             <div class="descriip">
                 <label for="">Descripcion</label>
                 <input type="text" name="descripcion" placeholder="Descripcion"> 
             </div>
-
+            
             <div class="boto">
                 <button type="submit">
                     <p>Abonar</p>
@@ -121,12 +124,64 @@
     </footer>
 
     <script>
+
+         // Validación en tiempo real para espacios
+        function checkSpaces(input) {
+            const errorSpaces = document.getElementById('errorSpaces');
+            if (input.value.includes(' ')) {
+                errorSpaces.style.display = 'block';
+                input.style.borderColor = 'red';
+            } else {
+                errorSpaces.style.display = 'none';
+                input.style.borderColor = '';
+            }
+        }
+        
+        // Validación antes de enviar el formulario
+        function validateForm() {
+            const nombreInput = document.getElementById('nombreTienda');
+            const nombre = nombreInput.value.trim();
+            
+            if (!nombre) {
+                alert('El nombre de la tienda no puede estar vacío');
+                return false;
+            }
+            
+            if (nombre.includes(' ')) {
+                alert('El nombre no puede contener espacios');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Cerrar mensajes al hacer clic en la X
+        document.querySelectorAll('.closebtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+        
+        // Ocultar mensajes después de 5 segundos
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.display = 'none';
+            });
+        }, 5000);
+        
         // Configuración inicial
-        const ID_MONEDA_USD = "3"; // Ajusta según tu base de datos
-        const ID_MONEDA_BS = "2";  // Ajusta según tu base de datos
+        const ID_MONEDA_USD = "2"; // Ajusta según tu base de datos (USD)
+        const ID_MONEDA_BS = "1";  // Ajusta según tu base de datos (Bolívares)
         var tasaCambio = parseFloat(document.getElementById('tasa-cambio').value);
         var listaMonedasMetodos = JSON.parse('{{ listaMonedasMetodos|safe }}');
         
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarMetodos();
+            actualizarNombresMoneda();
+            calcularEquivalente();
+        });
+
         // Función para actualizar métodos de pago
         function actualizarMetodos() {
             var monedaSeleccionada = document.getElementById("moneda").value;
@@ -148,30 +203,32 @@
             const monedaSelect = document.getElementById("moneda");
             const selectedOption = monedaSelect.options[monedaSelect.selectedIndex];
             const nombreMoneda = selectedOption.getAttribute('data-nombre');
+            const simboloMoneda = selectedOption.getAttribute('data-simbolo');
             
             document.getElementById('nombre-moneda').value = nombreMoneda;
             
             // Determinar el nombre de la moneda equivalente
             const monedaId = monedaSelect.value;
             if (monedaId === ID_MONEDA_USD) {
-                document.getElementById('nombre-moneda-equivalente').value = 'BS';
+                document.getElementById('nombre-moneda-equivalente').value = 'Bolívares';
                 document.getElementById('label-equivalente').textContent = 'Equivalente en BS';
             } else if (monedaId === ID_MONEDA_BS) {
-                document.getElementById('nombre-moneda-equivalente').value = 'USD';
+                document.getElementById('nombre-moneda-equivalente').value = 'Dólares';
                 document.getElementById('label-equivalente').textContent = 'Equivalente en USD';
             } else {
                 document.getElementById('nombre-moneda-equivalente').value = '';
                 document.getElementById('label-equivalente').textContent = 'Seleccione moneda';
             }
         }
-        
-        // Función para calcular el equivalente
+
         function calcularEquivalente() {
             try {
                 const monedaSeleccionada = document.getElementById("moneda").value;
                 const montoInput = document.getElementById("monto-input");
                 const monto = parseFloat(montoInput.value) || 0;
                 const equivalenteInput = document.getElementById("equivalente-conversion");
+                const montoPrincipalHidden = document.getElementById("monto-principal");
+                const montoEquivalenteHidden = document.getElementById("monto-equivalente-valor");
                 
                 // Validar monto positivo
                 if (monto < 0) {
@@ -182,23 +239,30 @@
                 if (monedaSeleccionada === ID_MONEDA_USD) {
                     // Convertir USD a BS
                     const equivalente = monto * tasaCambio;
-                    equivalenteInput.value = equivalente.toLocaleString('es-VE', {
-                        style: 'currency',
-                        currency: 'VES',
+                    equivalenteInput.value = 'Bs. ' + equivalente.toLocaleString('es-VE', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     });
+                    
+                    // Guardar valores en campos ocultos
+                    montoPrincipalHidden.value = monto; // Monto en USD
+                    montoEquivalenteHidden.value = equivalente; // Monto en BS
+                    
                 } else if (monedaSeleccionada === ID_MONEDA_BS) {
                     // Convertir BS a USD
                     const equivalente = monto / tasaCambio;
-                    equivalenteInput.value = equivalente.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
+                    equivalenteInput.value = '$ ' + equivalente.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     });
+                    
+                    // Guardar valores en campos ocultos
+                    montoPrincipalHidden.value = monto; // Monto en BS
+                    montoEquivalenteHidden.value = equivalente; // Monto en USD
                 } else {
                     equivalenteInput.value = "Seleccione moneda válida";
+                    montoPrincipalHidden.value = "";
+                    montoEquivalenteHidden.value = "";
                 }
             } catch (error) {
                 console.error("Error en cálculo de equivalente:", error);
@@ -206,16 +270,8 @@
         }
 
         // Event listeners
-        document.getElementById("moneda").addEventListener("change", function() {
-            actualizarMetodos();
-            actualizarNombresMoneda();
-            calcularEquivalente();
-        });
-
-        document.getElementById("monto-input").addEventListener("input", calcularEquivalente);
-
-        // Inicialización
-        window.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById("monto-input").addEventListener('input', calcularEquivalente);
+        document.getElementById("moneda").addEventListener('change', function() {
             actualizarMetodos();
             actualizarNombresMoneda();
             calcularEquivalente();

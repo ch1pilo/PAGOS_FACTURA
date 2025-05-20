@@ -98,8 +98,7 @@ def registrarUsuario(request):
                 return redirect('usuarios')
 
     tiendas = models.Departamentos.objects.all()
-    return render(request, "usuarios"
-    ".html", {'tiendas': tiendas})
+    return render(request, "usuarios.html", {'tiendas': tiendas})
             
 
 # API de login
@@ -145,13 +144,10 @@ def departamento(request):
     if request.method == 'POST' or request.method == 'GET':
         depaar = request.POST.get('departamento', "").strip()
         print(f'este es el departamento {depaar}')
-        depaar = request.POST.get('departamento') 
-        print(f'el nombre del departamento es {depaar}')
-
         try:
             # Busca el departamento
             departamento = models.Departamentos.objects.get(departamento=depaar)
-            print(f'el nombre del departamento es {departamento}')
+
             # Obtiene todos los clientes
             todos_clientes = [cliente.nombre for cliente in models.Cliente.objects.all()]
             todos_pagos = models.Pago.objects.all()
@@ -165,9 +161,9 @@ def departamento(request):
                 monto_restar = 0
                  
                 for m in todos_pagos:
-                    print(f'{factura.id} = {m.id_factura_id} el montno del pago es: {m.monto} y el de la factura es: {factura.monto}')
+                    print(f'{factura.id} = {m.id_factura_id} el montno del pago es: {m.montoUSD} y el de la factura es: {factura.monto}')
                     if factura.id == m.id_factura_id:
-                        monto_restar +=  (factura.monto - m.monto) - factura.monto
+                        monto_restar +=  (factura.monto - m.montoUSD) - factura.monto
                 print (f'el monto de la factura a cobrar es: {monto_restar}')
                 monotEvaluar = factura.monto + monto_restar
                 print(monotEvaluar)
@@ -189,7 +185,6 @@ def departamento(request):
             return render(request, 'cliente.html', contexto)
 
         except models.Departamentos.DoesNotExist:
-            print('algo no se cumple')
             return redirect('tipoUser')
 
     return JsonResponse({'error': 'Método no permitido.'}, status=405)
@@ -266,7 +261,7 @@ def generarFactura(request):
             numero_destino = f'+58{formato}'
             print(numero_destino)
 
-            mensaje = f'Numero de su factura: {factura}, Monto de su factura: {monto}bs'
+            mensaje = f'{factura}, Monto de su factura: {monto}USD'
 
             palabra = {
                 'palabra' : 'Factura',
@@ -297,9 +292,18 @@ def datosFacturaPagar(request):
             moneda = models.Moneda.objects.all()
             metodo = models.MetodosPago.objects.all()
             resta = request.POST.get('resta')
+            tasa = models.Tasa.objects.all()
+            
+            tasaactual = 0 
+            for i in tasa: 
+                tasaactual = i.tasa
+            
+            bs = float(tasaactual) * float(resta)
+
             print( f'resta: {resta}')
             dic = {
                 'resta' : resta,
+                'bs': bs,
                 'metodo' : metodo,
                 'moneda' : moneda,
                 'fecha' : fecha,
@@ -368,7 +372,7 @@ def datosFacturasCliente(request):
                     montoTotal = 0
                     for p in pagos:
                         if f.id == p.id_factura_id:
-                            montoTotal += p.monto  
+                            montoTotal += p.montoUSD 
                             
                         
                     if f.id_cliente_id == clienteID.id and departamentoID.id == f.idDepartamento_id and (f.monto-montoTotal)>0:
@@ -394,37 +398,36 @@ def pagogenerado(request):
             monea = request.POST.get('moneda')
             fecha = request.POST.get('fecha')
             metodo = request.POST.get('metodo')
-            monto = request.POST.get('monto')
-            
+            monto = str (request.POST.get('monto_principal'))
+            monto_equivalente = str(request.POST.get('monto_equivalente'))
+
             print(factura)
-            print(monea)
-            print(metodo)
+            print(monto)
+            print(monto_equivalente)
+
             usu = request.user
             facturaID = models.Factura.objects.get(nrFactura = factura)
             monedaID = models.Moneda.objects.get(id = monea)
+
             if monedaID.nombre_moneda == 'USD':
-                print(f'tasa {facturaID.tasa}')
-                print(monto)
-                print (f'{facturaID.tasa} * {monto}')
-                
-                tasaFloat = facturaID.tasa
-                convertir = float (tasaFloat)
-                montofloant = float(monto)
-                montototal = convertir * montofloant
-                print(montototal)
-                print (type(convertir))
-                print (type(montofloant))
+                montoUSD = round(float(monto), 2)
+                montoBS = round(float(monto_equivalente), 2)
+                print(f'monto USD {montoUSD}')
+                print(f'monto bs {montoBS}')
             else:
-                montototal = monto
+                montoUSD = round(float(monto_equivalente), 2)
+                montoBS = round(float(monto), 2)
+                print(f'monto bs {montoBS}')
+                print(f'monto USD {montoUSD}')
             
             descripcion = request.GET.get('descripcion')
             if descripcion == None:
                     descripcion = 'sin efecto'
             
-            
             enviar = models.Pago(
                 id_factura = facturaID,
-                monto = montototal,
+                montoBS = montoBS,
+                montoUSD = montoUSD,
                 fecha = fecha,
                 metodo_pago = metodo,
                 id_moneda = monedaID,
@@ -442,7 +445,7 @@ def pagogenerado(request):
             numero_destino = f'+58{formato}'
             print(numero_destino)
 
-            mensaje = f'Numero de su factura: {factura}, Monto de su pago: {monto}bs'
+            mensaje = f'{factura}, Monto de su pago: {monto}USD, Moneda del pago: {monedaID.nombre_moneda}'
 
             palabra = {
                 
@@ -501,14 +504,14 @@ def datosDelPago (request):
 
 
             monto_factura = factura.monto
-            monto_abonado = pago.monto
+            monto_abonado = pago.montoUSD
             monto_restar = 0
             todos_pagos_factura = models.Pago.objects.all()
             for p in todos_pagos_factura:
                 if p.id_factura.id == factura.id:
-                    print(p.monto)
+                    print(p.montoUSD)
                     print(f'restar {monto_restar}')
-                    reto = float(p.monto)
+                    reto = float(p.montoUSD)
                     monto_restar += reto
             print(f'el monto {monto_restar}')
 
@@ -516,7 +519,7 @@ def datosDelPago (request):
             
             montorestante = monto_restar-float(monto_factura)
             print(montorestante)
-            mensaje = f'Numero de su factura: {factura}, Saldo abonado: {monto_abonado}bs, Monto de su factura: {monto_factura}bs, saldo restante:{montorestante}bs'
+            mensaje = f'Numero de su factura: {factura}, Saldo abonado: {monto_abonado}USD, Monto de su factura: {monto_factura}USD, saldo restante:{montorestante}USD'
             
 
             metodoPago = models.MetodosPago.objects.get(id = pago.metodo_pago )
@@ -561,7 +564,7 @@ def facturas_pagadas_cliente(request):
             for pago in pagos:
                 if pago.id_factura_id not in pagos_por_factura:
                     pagos_por_factura[pago.id_factura_id] = 0
-                pagos_por_factura[pago.id_factura_id] += pago.monto
+                pagos_por_factura[pago.id_factura_id] += pago.montoUSD
 
             print(f"Pagos acumulados por factura: {pagos_por_factura}")  # Depuración
 
@@ -728,27 +731,13 @@ def ActualizarTasa(request):
 def tienda(request):
     try:
         if request.method == 'POST' or request.method == 'GET':
+            # Verifica si el usuario ya existe
             nombre = request.POST.get('nombre', "").strip()
+            if models.Departamentos.objects.filter(departamento=nombre).exists():
+                messages.error(request, 'El departamento ya existe')
+                return redirect('vistaTienda')
+           
             print(f'esta es la tienda: {nombre}')
-            enviar = models.Departamentos(
-                departamento = nombre
-            )
-            enviar.save()
-            dic= {
-                'palabra' : 'Tienda'
-            }
-            return render(request, 'confirmar.html', dic)
-        if request.method == 'POST' or request.method == 'GET':
-            nombre = request.POST.get('nombre')
-            virificar_palabras = nombre.split()
-            n=0
-            for i in virificar_palabras:
-                n+=1
-                if n > 2:
-                    messages = ('El nombre de la tienda')
-                    return render(request, 'tienda.html')
-            
-            print(nombre)
             enviar = models.Departamentos(
                 departamento = nombre
             )
@@ -759,7 +748,6 @@ def tienda(request):
             return render(request, 'confirmar.html', dic)
     except:
         return redirect ('tipoUser')
-     
     
 def usuarios(request):
     return render (request, 'usuarios.html')

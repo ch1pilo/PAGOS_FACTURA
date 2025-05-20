@@ -15,24 +15,10 @@ body{
   align-items: center;
   flex-direction: column;
   margin-top: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
 }
 img{
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
   height: 350px;
   width: 350px;
-=======
-  height: 380px;
-  width: 380px;
->>>>>>> Stashed changes
-=======
-  height: 380px;
-  width: 380px;
->>>>>>> Stashed changes
   margin-bottom: 30px;
   margin: auto;
 }
@@ -78,3 +64,47 @@ a{
   color: #f8f320;
 }
 
+/* Estilos para los mensajes */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            width: 80%;
+            margin: 10px auto;
+            text-align: center;
+        }
+        
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .closebtn {
+            margin-left: 15px;
+            color: inherit;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .closebtn:hover {
+            color: black;
+        }
+        
+        #errorSpaces {
+            color: red;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+        }

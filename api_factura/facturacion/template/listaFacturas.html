@@ -10,6 +10,14 @@
     <title>{{cliente}}</title>
 </head>
 <body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
     <header>
         <div class="titulo1">
             <img src="{% static 'img/logo.png' %}" alt="departamento-mas">
@@ -26,8 +34,8 @@
                 <div class="inf">
                     <h1>{{f.facturas.nrFactura}}</h1>
                     <div class="montoDeuda">
-                        <p>Monto: {{f.facturas.monto}}bs</p>
-                        <p id="resta">Restan: {{f.monto}}bs</p>
+                        <p>Monto: {{f.facturas.monto}} USD</p>
+                        <p id="resta">Restan: {{f.monto}} USD</p>
                         <input type="hidden" name="resta" value="{{f.monto}}">
                     </div>
                     <p>Detalle: {{f.facturas.descripcion}}</p>
@@ -47,5 +55,50 @@
             </ul>
         </div>
     </footer>
+    <script>
+         // Validación en tiempo real para espacios
+        function checkSpaces(input) {
+            const errorSpaces = document.getElementById('errorSpaces');
+            if (input.value.includes(' ')) {
+                errorSpaces.style.display = 'block';
+                input.style.borderColor = 'red';
+            } else {
+                errorSpaces.style.display = 'none';
+                input.style.borderColor = '';
+            }
+        }
+        
+        // Validación antes de enviar el formulario
+        function validateForm() {
+            const nombreInput = document.getElementById('nombreTienda');
+            const nombre = nombreInput.value.trim();
+            
+            if (!nombre) {
+                alert('El nombre de la tienda no puede estar vacío');
+                return false;
+            }
+            
+            if (nombre.includes(' ')) {
+                alert('El nombre no puede contener espacios');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Cerrar mensajes al hacer clic en la X
+        document.querySelectorAll('.closebtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+        
+        // Ocultar mensajes después de 5 segundos
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.display = 'none';
+            });
+        }, 5000);
+    </script>
 </body>
 </html>
